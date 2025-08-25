@@ -1,0 +1,59 @@
+# Exemplo de docker-compose.yml com Docker Secrets
+
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: coreapi-app
+    secrets:
+      - jwt_secret
+      - jwt_issuer
+      - jwt_audience
+      - db_connection
+      - cors_origins
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: coreapi-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD_FILE=/run/secrets/db_sa_password
+    secrets:
+      - db_sa_password
+    ports:
+      - "1433:1433"
+    volumes:
+      - db_data:/var/opt/mssql
+    networks:
+      - app-network
+
+secrets:
+  jwt_secret:
+    file: ./secrets/jwt_secret.txt
+  jwt_issuer:
+    file: ./secrets/jwt_issuer.txt
+  jwt_audience:
+    file: ./secrets/jwt_audience.txt
+  db_connection:
+    file: ./secrets/db_connection.txt
+  cors_origins:
+    file: ./secrets/cors_origins.txt
+  db_sa_password:
+    file: ./secrets/db_sa_password.txt
+
+volumes:
+  db_data:
+
+networks:
+  app-network:
+    driver: bridge
