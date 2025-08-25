@@ -72,3 +72,4 @@ Desktop.ini
 # Rider
 .idea/
 *.sln.iml
+CoreApiBase/appdb.sqlite
