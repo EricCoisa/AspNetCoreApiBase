@@ -19,7 +19,7 @@ namespace CoreApiBase.Middlewares
                 var username = context.User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
                 
                 _logger.LogInformation("Authenticated request from User: {Username} (ID: {UserId}) to {Method} {Path}",
-                    username, userId, context.Request.Method, context.Request.Path);
+                username, userId, context.Request.Method, context.Request.Path);
             }
 
             await _next(context);

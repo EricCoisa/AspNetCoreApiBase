@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using CoreDomainBase.Enums;
+using System.Reflection;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,8 +63,8 @@ builder.Services.AddAuthentication(options =>
 // Configure Authorization with Claims Policy
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("UserOrAdmin", policy => policy.RequireRole("User", "Admin"));
+    options.AddPolicy(Policy.AdminOnly.ToString(), policy => policy.RequireRole(Roles.Admin.ToString()));
+    options.AddPolicy(Policy.UserOrAdmin.ToString(), policy => policy.RequireRole(Roles.User.ToString(), Roles.Admin.ToString()));
 });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -90,6 +93,10 @@ builder.Services.AddSwaggerGen(options =>
             new string[] {}
         }
     });
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
 });
 
 var app = builder.Build();
@@ -105,6 +112,13 @@ app.UseHttpsRedirection();
 app.UseCors();
 
 app.UseAuthentication();
+
+// Security stamp validation middleware (after auth)
+app.UseMiddleware<SecurityStampValidationMiddleware>();
+
+// Database role authorization middleware (replaces token role with DB role)
+app.UseMiddleware<DatabaseRoleAuthorizationMiddleware>();
+
 app.UseAuthorization();
 
 // Optional auth logging middleware

@@ -4,9 +4,9 @@ using CoreDomainBase.Data;
 
 namespace CoreDomainBase.Repositories
 {
-    public class UserRepositories : RepositoriesBase<User>
+    public class UserRepository : RepositoryBase<User>, IUserRepository
     {
-        public UserRepositories(AppDbContext context) : base(context)
+        public UserRepository(AppDbContext context) : base(context)
         {
         }
     }

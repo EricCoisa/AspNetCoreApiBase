@@ -27,7 +27,8 @@ namespace CoreApiBase.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role.ToString())
+                // Note: Role is NOT included in token - it will be fetched from DB on each request
+                new Claim("SecurityStamp", user.SecurityStamp) // Add SecurityStamp for token validation
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor

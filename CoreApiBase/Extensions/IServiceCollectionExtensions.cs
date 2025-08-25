@@ -11,8 +11,9 @@ namespace CoreApiBase.Extensions
     {
         public static IServiceCollection AddProjectDependencies(this IServiceCollection services)
         {
-            services.AddScoped(typeof(IRepositoriesBase<>), typeof(RepositoriesBase<>));
+            services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
             services.AddScoped(typeof(IServicesBase<>), typeof(ServiceBase<>));
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<AuthService>();
             return services;
         }

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CoreDomainBase.Services
 {
-    public class UserService : ServiceBase<User>
+    public class UserService : ServiceBase<User>, IUserService
     {
-        public UserService(IRepositoriesBase<User> repository) : base(repository)
+        public UserService(IRepositoryBase<User> repository) : base(repository)
         {
         }
     }

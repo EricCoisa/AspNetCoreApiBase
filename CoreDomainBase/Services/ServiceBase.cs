@@ -7,9 +7,9 @@ namespace CoreDomainBase.Services
 {
     public class ServiceBase<T> : IServicesBase<T> where T : class
     {
-        private readonly IRepositoriesBase<T> _repository;
+        private readonly IRepositoryBase<T> _repository;
 
-        public ServiceBase(IRepositoriesBase<T> repository)
+        public ServiceBase(IRepositoryBase<T> repository)
         {
             _repository = repository;
         }

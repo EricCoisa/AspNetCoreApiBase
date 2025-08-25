@@ -10,5 +10,14 @@ namespace CoreDomainBase.Entities
         public string PasswordHash { get; set; } = string.Empty;
         public Roles Role { get; set; } = Roles.User;
         public string Name { get; set; } = string.Empty;
+        public string SecurityStamp { get; set; } = Guid.NewGuid().ToString();
+        
+        /// <summary>
+        /// Generates a new SecurityStamp to invalidate existing tokens
+        /// </summary>
+        public void RefreshSecurityStamp()
+        {
+            SecurityStamp = Guid.NewGuid().ToString();
+        }
     }
 }

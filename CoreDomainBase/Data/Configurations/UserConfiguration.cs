@@ -30,6 +30,10 @@ namespace CoreDomainBase.Data.Configurations
                    .IsRequired()
                    .HasConversion<int>();
 
+            builder.Property(u => u.SecurityStamp)
+                   .IsRequired()
+                   .HasMaxLength(36);
+
             // Unique constraints
             builder.HasIndex(u => u.Username).IsUnique();
             builder.HasIndex(u => u.Email).IsUnique();

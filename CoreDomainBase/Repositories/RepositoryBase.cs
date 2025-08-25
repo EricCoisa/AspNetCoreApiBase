@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace CoreDomainBase.Repositories
 {
-    public class RepositoriesBase<T> : IRepositoriesBase<T> where T : class
+    public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
         private readonly Data.AppDbContext _context;
 
-        public RepositoriesBase(Data.AppDbContext context)
+        public RepositoryBase(Data.AppDbContext context)
         {
             _context = context;
         }
