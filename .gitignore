@@ -1,0 +1,74 @@
+# Build results
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio 2022
+.vs/
+.vscode/
+
+# NuGet packages
+*.nupkg
+# The packages folder can be ignored if you use Package Restore
+**/packages/*
+!**/packages/build/
+!**/packages/repositories.config
+
+# .NET Core / .NET 8
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# StyleCop
+StyleCopReport.xml
+
+# Files built by Visual Studio
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlh
+*.tli
+*.tmp
+*.log
+*.vspscc
+*.vssscc
+*.cache
+*.dbmdl
+*.bak
+*.sql
+*.psess
+*.vsp
+*.vsix
+*.docstates
+
+# Others
+TestResults/
+*.TestResults
+*.DS_Store
+*.AppleDouble
+*.LSOverride
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Rider
+.idea/
+*.sln.iml
