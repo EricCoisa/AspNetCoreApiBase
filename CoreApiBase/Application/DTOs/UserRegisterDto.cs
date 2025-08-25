@@ -2,12 +2,12 @@ using CoreDomainBase.Enums;
 
 namespace CoreApiBase.Application.DTOs
 {
-    public class UserDto
+    public class UserRegisterDto
     {
-        public int Id { get; set; }
         public string Username { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
-        public Roles Role { get; set; }
+        public Roles Role { get; set; } = Roles.User;
     }
 }
