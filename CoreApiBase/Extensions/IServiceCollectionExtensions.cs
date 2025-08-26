@@ -32,14 +32,20 @@ namespace CoreApiBase.Extensions
         /// <param name="configuration">Configuration</param>
         /// <returns>Service collection para chaining</returns>
         /// <exception cref="InvalidOperationException">Quando configurações obrigatórias estão inválidas</exception>
-        public static IServiceCollection AddAndValidateConfigurations(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAndValidateConfigurations(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment? environment = null)
         {
+            // Pular validação durante testes
+            bool skipValidation = environment?.EnvironmentName == "Testing";
+            
             // Configurar e validar JwtSettings
             var jwtSection = configuration.GetSection(JwtSettings.SectionName);
             services.Configure<JwtSettings>(jwtSection);
             
             var jwtSettings = jwtSection.Get<JwtSettings>() ?? new JwtSettings();
-            jwtSettings.ValidateConfiguration(JwtSettings.SectionName);
+            if (!skipValidation)
+            {
+                jwtSettings.ValidateConfiguration(JwtSettings.SectionName);
+            }
 
             // Configurar e validar DatabaseSettings
             var dbSection = configuration.GetSection(DatabaseSettings.SectionName);
@@ -61,14 +67,20 @@ namespace CoreApiBase.Extensions
                 }
             });
             
-            dbSettings.ValidateConfiguration(DatabaseSettings.SectionName);
+            if (!skipValidation)
+            {
+                dbSettings.ValidateConfiguration(DatabaseSettings.SectionName);
+            }
 
             // Configurar e validar CorsSettings
             var corsSection = configuration.GetSection(CorsSettings.SectionName);
             services.Configure<CorsSettings>(corsSection);
             
             var corsSettings = corsSection.Get<CorsSettings>() ?? new CorsSettings();
-            corsSettings.ValidateConfiguration(CorsSettings.SectionName);
+            if (!skipValidation)
+            {
+                corsSettings.ValidateConfiguration(CorsSettings.SectionName);
+            }
 
             return services;
         }

@@ -102,3 +102,7 @@ temp_jwt_key.txt
 # Arquivos de configuração de produção
 production.env
 *.env.production
+
+# Snapshots do Snapshooter
+__Snapshots__/
+*.snap

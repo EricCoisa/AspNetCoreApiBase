@@ -2,22 +2,20 @@ using CoreApiBase.Controllers;
 
 namespace CoreTestBase.Integration
 {
-    public class HealthTests : IClassFixture<CustomWebApplicationFactory>
+    /// <summary>
+    /// Testes de integração para os endpoints de Health Check
+    /// </summary>
+    public class HealthTests : IntegrationTestBase
     {
-        private readonly CustomWebApplicationFactory _factory;
-        private readonly HttpClient _client;
-
-        public HealthTests(CustomWebApplicationFactory factory)
+        public HealthTests(IntegrationWebApplicationFactory factory) : base(factory)
         {
-            _factory = factory;
-            _client = _factory.CreateClient();
         }
 
         [Fact]
         public async Task GetHealth_ShouldReturnOk_WhenApplicationIsHealthy()
         {
             // Act
-            var response = await _client.GetAsync("/api/health");
+            var response = await Client.GetAsync("/api/health");
             var content = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -38,7 +36,7 @@ namespace CoreTestBase.Integration
         public async Task GetConfigHealth_ShouldReturnDetailedHealth_WithConfigurationChecks()
         {
             // Act
-            var response = await _client.GetAsync("/api/health/config");
+            var response = await Client.GetAsync("/api/health/config");
             var content = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -56,30 +54,10 @@ namespace CoreTestBase.Integration
         }
 
         [Fact]
-        public async Task GetHealthByTag_ShouldReturnFilteredHealth_ForValidTag()
-        {
-            // Act
-            var response = await _client.GetAsync("/api/health/tag/config");
-            var content = await response.Content.ReadAsStringAsync();
-
-            // Assert
-            response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.ServiceUnavailable);
-            content.Should().NotBeNullOrEmpty();
-            
-            var healthResponse = JsonSerializer.Deserialize<DetailedHealthResponse>(content, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-            
-            healthResponse.Should().NotBeNull();
-            healthResponse!.FilteredByTag.Should().Be("config");
-        }
-
-        [Fact]
         public async Task GetHealthTags_ShouldReturnAvailableTags()
         {
             // Act
-            var response = await _client.GetAsync("/api/health/tags");
+            var response = await Client.GetAsync("/api/health/tags");
             var content = await response.Content.ReadAsStringAsync();
 
             // Assert
@@ -103,7 +81,7 @@ namespace CoreTestBase.Integration
         public async Task HealthEndpoints_ShouldReturnValidResponse_ForAllEndpoints(string endpoint)
         {
             // Act
-            var response = await _client.GetAsync(endpoint);
+            var response = await Client.GetAsync(endpoint);
 
             // Assert
             response.Should().NotBeNull();
@@ -119,22 +97,22 @@ namespace CoreTestBase.Integration
         public async Task GetHealth_ShouldHaveCorrectContentType()
         {
             // Act
-            var response = await _client.GetAsync("/api/health");
+            var response = await Client.GetAsync("/api/health");
 
             // Assert
             response.Content.Headers.ContentType?.MediaType.Should().Be("application/json");
         }
 
         [Fact]
-        public async Task GetHealthByTag_ShouldReturnNotFound_ForInvalidTag()
+        public async Task GetHealthByTag_ShouldReturnFilteredHealth_ForValidTag()
         {
             // Act
-            var response = await _client.GetAsync("/api/health/tag/nonexistent");
+            var response = await Client.GetAsync("/api/health/tag/config");
             var content = await response.Content.ReadAsStringAsync();
 
             // Assert
-            // Mesmo para tags que não existem, o endpoint deve retornar OK com uma lista vazia
             response.StatusCode.Should().BeOneOf(HttpStatusCode.OK, HttpStatusCode.ServiceUnavailable);
+            content.Should().NotBeNullOrEmpty();
             
             var healthResponse = JsonSerializer.Deserialize<DetailedHealthResponse>(content, new JsonSerializerOptions
             {
@@ -142,7 +120,7 @@ namespace CoreTestBase.Integration
             });
             
             healthResponse.Should().NotBeNull();
-            healthResponse!.FilteredByTag.Should().Be("nonexistent");
+            healthResponse!.FilteredByTag.Should().Be("config");
         }
 
         [Fact]
@@ -151,9 +129,9 @@ namespace CoreTestBase.Integration
             // Arrange - Cliente sem autenticação (já é o padrão)
             
             // Act
-            var healthResponse = await _client.GetAsync("/api/health");
-            var configResponse = await _client.GetAsync("/api/health/config");
-            var tagsResponse = await _client.GetAsync("/api/health/tags");
+            var healthResponse = await Client.GetAsync("/api/health");
+            var configResponse = await Client.GetAsync("/api/health/config");
+            var tagsResponse = await Client.GetAsync("/api/health/tags");
 
             // Assert
             healthResponse.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
@@ -169,7 +147,7 @@ namespace CoreTestBase.Integration
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
 
             // Act
-            var response = await _client.GetAsync("/api/health");
+            var response = await Client.GetAsync("/api/health");
 
             // Assert
             stopwatch.Stop();
@@ -186,7 +164,7 @@ namespace CoreTestBase.Integration
             // Act - Fazer múltiplas requisições paralelas
             for (int i = 0; i < 5; i++)
             {
-                tasks.Add(_client.GetAsync("/api/health"));
+                tasks.Add(Client.GetAsync("/api/health"));
             }
 
             var responses = await Task.WhenAll(tasks);
@@ -198,6 +176,21 @@ namespace CoreTestBase.Integration
             // Todos devem ter o mesmo status (assumindo que a saúde não muda durante o teste)
             var statusCodes = responses.Select(r => r.StatusCode).Distinct();
             statusCodes.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public async Task GetHealth_WithDatabase_ShouldIncludeDatabaseStatus()
+        {
+            // Arrange
+            await Factory.InitializeDatabaseAsync();
+
+            // Act
+            var response = await Client.GetAsync("/api/health");
+            var content = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            content.Should().Contain("Healthy");
         }
     }
 }

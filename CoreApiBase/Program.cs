@@ -118,7 +118,7 @@ builder.Services.AddSingleton(jwtSettings);
 
 // Configurar e validar todas as configurações usando Options Pattern
 // Isso validará configurações obrigatórias na inicialização
-builder.Services.AddAndValidateConfigurations(builder.Configuration);
+builder.Services.AddAndValidateConfigurations(builder.Configuration, builder.Environment);
 
 // Configure CORS
 var corsSettings = builder.Configuration.GetSection("CorsSettings");
@@ -318,3 +318,6 @@ using (var scope = app.Services.CreateScope())
 app.MapControllers();
 
 app.Run();
+
+// Classe pública para testes de integração
+public partial class Program { }

@@ -8,6 +8,12 @@ public static class ConfigurationSetupHelper
 {
     public static void ValidateRequiredConfigurationsOrShowSetupPage(IConfiguration configuration, IWebHostEnvironment environment)
     {
+        // Pular validação durante testes
+        if (environment.EnvironmentName == "Testing")
+        {
+            return;
+        }
+
         var missingConfigurations = new List<string>();
 
         // Verificar JWT Settings

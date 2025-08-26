@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
@@ -10,6 +11,7 @@ namespace CoreApiBase.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Tags("Health Checks")]
+    [AllowAnonymous] // Health checks não devem exigir autenticação
     public class HealthController : ControllerBase
     {
         private readonly HealthCheckService _healthCheckService;
