@@ -38,8 +38,14 @@ if (builder.Environment.IsDevelopment())
 // 4. Environment Variables
 builder.Configuration.AddEnvironmentVariables();
 
-// Mapear variáveis de ambiente para configurações internas (Production/Release)
-if (builder.Environment.IsProduction() || builder.Environment.EnvironmentName == "Release")
+// Mapear variáveis de ambiente para configurações internas (Docker/Production/Release)
+// Incluir Development quando rodando via Docker (Visual Studio)
+var isDockerEnvironment = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true" ||
+                         !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("JWT_SECRET_KEY"));
+
+if (builder.Environment.IsProduction() || 
+    builder.Environment.EnvironmentName == "Release" || 
+    isDockerEnvironment)
 {
     var memoryConfig = new Dictionary<string, string?>();
     
@@ -92,12 +98,15 @@ builder.Configuration.AddDockerSecrets(secrets =>
 // Se as configurações estão faltando, mostra página de instruções e para a execução
 ConfigurationSetupHelper.ValidateRequiredConfigurationsOrShowSetupPage(builder.Configuration, builder.Environment);
 
-// 🔍 DEBUG: Verificar se as variáveis foram mapeadas corretamente
-if (builder.Environment.IsProduction() || builder.Environment.EnvironmentName == "Release")
+// 🔍 DEBUG: Verificar se as variáveis foram mapeadas corretamente (apenas se habilitado)
+if ((builder.Environment.IsProduction() || 
+    builder.Environment.EnvironmentName == "Release" || 
+    isDockerEnvironment) && Environment.GetEnvironmentVariable("DEBUG_CONFIG_MAPPING") == "true")
 {
     Console.WriteLine($"[DEBUG] Environment: {builder.Environment.EnvironmentName}");
-    Console.WriteLine($"[DEBUG] JWT_SECRET_KEY env var: {Environment.GetEnvironmentVariable("JWT_SECRET_KEY")?[..20]}...");
-    Console.WriteLine($"[DEBUG] JwtSettings:SecretKey config: {builder.Configuration["JwtSettings:SecretKey"]?[..20]}...");
+    Console.WriteLine($"[DEBUG] IsDockerEnvironment: {isDockerEnvironment}");
+    Console.WriteLine($"[DEBUG] JWT_SECRET_KEY env var: {Environment.GetEnvironmentVariable("JWT_SECRET_KEY")?[..Math.Min(20, Environment.GetEnvironmentVariable("JWT_SECRET_KEY")?.Length ?? 0)]}...");
+    Console.WriteLine($"[DEBUG] JwtSettings:SecretKey config: {builder.Configuration["JwtSettings:SecretKey"]?[..Math.Min(20, builder.Configuration["JwtSettings:SecretKey"]?.Length ?? 0)]}...");
     Console.WriteLine($"[DEBUG] DATABASE_CONNECTION_STRING env var: {Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING")}");
     Console.WriteLine($"[DEBUG] ConnectionStrings:DefaultConnection config: {builder.Configuration["ConnectionStrings:DefaultConnection"]}");
 }

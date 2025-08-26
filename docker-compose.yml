@@ -29,10 +29,10 @@ services:
       
     volumes:
       # OPCAO 1: Volume isolado (padrao) - banco separado do desenvolvimento
-      - sqlite_data:/app/data
+      #       - sqlite_data:/app/data
       
       # OPCAO 2: Banco compartilhado com desenvolvimento - descomente para usar
-      #       - ./CoreApiBase:/app/data
+      - ./CoreApiBase:/app/data
       
     # Docker Secrets
     secrets:
