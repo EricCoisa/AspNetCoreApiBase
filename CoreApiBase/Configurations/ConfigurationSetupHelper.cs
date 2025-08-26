@@ -46,7 +46,7 @@ public static class ConfigurationSetupHelper
             // Forçar parada da aplicação com mensagem clara
             throw new InvalidOperationException(
                 $"🔧 CONFIGURAÇÃO NECESSÁRIA: Execute 'start setup-configuration.bat {setupCommand}' no diretório raiz do projeto. " +
-                "Arquivo 'configuracao-necessaria.html' criado com instruções detalhadas." + visualStudioInstructions);
+                "Arquivo 'configRequired.html' criado com instruções detalhadas." + visualStudioInstructions);
         }
     }
 

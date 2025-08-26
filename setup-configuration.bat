@@ -56,6 +56,11 @@ echo [4/4] Verificando configuracao...
 dotnet user-secrets list
 
 cd ..
+
+echo.
+echo [Bonus] Criando launchSettings.json para Visual Studio...
+powershell -Command "Copy-Item 'CoreApiBase\Properties\launchSettings.template.json' 'CoreApiBase\Properties\launchSettings.json' -Force; Write-Host '✅ launchSettings.json criado a partir do template'"
+
 echo.
 echo =========================================
 echo   ✅ DESENVOLVIMENTO CONFIGURADO!
@@ -74,22 +79,75 @@ echo.
 goto :end
 
 :setup_docker
-echo [1/4] Criando secrets para Docker...
+echo [1/5] Criando secrets para Docker...
 if not exist secrets mkdir secrets
 
 echo %JWT_KEY% > secrets\jwt_secret
 echo http://localhost:8080 > secrets\jwt_issuer  
 echo http://localhost:8080 > secrets\jwt_audience
-echo Data Source=/app/data/app.sqlite > secrets\db_connection
+
+echo [2/5] Configurando banco de dados para Docker...
+echo.
+echo =========================================
+echo   CONFIGURACAO DE BANCO DE DADOS
+echo =========================================
+echo.
+echo Escolha o tipo de banco para Docker:
+echo.
+echo   1. Volume isolado (padrao)
+echo      - Banco Docker: /app/data/app.sqlite
+echo      - Banco Local:  ./CoreApiBase/appdb.sqlite
+echo      - Resultado:    Bancos separados e independentes
+echo.
+echo   2. Banco compartilhado
+echo      - Banco Docker: /app/data/appdb.sqlite
+echo      - Banco Local:  ./CoreApiBase/appdb.sqlite  
+echo      - Resultado:    Mesmo banco usado em ambos os ambientes
+echo.
+set /p "DOCKER_DB_CHOICE=Escolha [1-2] (padrao=1): "
+
+if "%DOCKER_DB_CHOICE%"=="" set "DOCKER_DB_CHOICE=1"
+
+if "%DOCKER_DB_CHOICE%"=="2" (
+    echo Data Source=/app/data/appdb.sqlite > secrets\db_connection
+    
+    echo [2.1/5] Configurando docker-compose.yml para banco compartilhado...
+    
+    REM Editar docker-compose.yml automaticamente
+    powershell -Command "(Get-Content docker-compose.yml) -replace '^(\s*- sqlite_data:/app/data)$', '      # $1' | Set-Content docker-compose.yml"
+    powershell -Command "(Get-Content docker-compose.yml) -replace '^(\s*#\s*- \./CoreApiBase:/app/data)$', '      - ./CoreApiBase:/app/data' | Set-Content docker-compose.yml"
+    
+    echo ✅ Connection string configurada para banco compartilhado
+    echo ✅ docker-compose.yml configurado automaticamente
+    echo.
+    set "SHARED_DB=true"
+) else (
+    echo Data Source=/app/data/app.sqlite > secrets\db_connection
+    
+    echo [2.1/5] Configurando docker-compose.yml para volume isolado...
+    
+    REM Editar docker-compose.yml automaticamente  
+    powershell -Command "(Get-Content docker-compose.yml) -replace '^(\s*#\s*- sqlite_data:/app/data)$', '      - sqlite_data:/app/data' | Set-Content docker-compose.yml"
+    powershell -Command "(Get-Content docker-compose.yml) -replace '^(\s*- \./CoreApiBase:/app/data)$', '      # $1' | Set-Content docker-compose.yml"
+    
+    echo ✅ Connection string configurada para volume isolado (padrao)
+    echo ✅ docker-compose.yml configurado automaticamente
+    set "SHARED_DB=false"
+)
+
 echo http://localhost:3000,http://localhost:4200,http://localhost:8080 > secrets\cors_origins
 
-echo [2/4] Configurando permissoes dos secrets...
+echo [3/5] Configurando permissoes dos secrets...
 REM No Windows, os arquivos já são criados com permissões adequadas
 
-echo [3/4] Verificando arquivos criados...
+echo [4/5] Verificando arquivos criados...
 dir secrets
 
-echo [4/4] Docker secrets configurados!
+echo [5/5] Docker secrets configurados
+
+echo.
+echo [Bonus] Configurando Visual Studio Docker...
+powershell -ExecutionPolicy Bypass -File configure-launch-settings.ps1
 echo.
 echo =========================================
 echo   ✅ DOCKER CONFIGURADO!
@@ -100,9 +158,15 @@ echo   docker-compose up -d
 echo.
 echo Acesse:
 echo   Swagger: http://localhost:8080/swagger
-echo   Health:  http://localhost:8080/api/health
+echo   Health:  http://localhost:8080/health
 echo.
 echo Para parar: docker-compose down
+echo.
+if "%DOCKER_DB_CHOICE%"=="1" (
+    echo 💡 Banco isolado: dados Docker separados do desenvolvimento
+) else (
+    echo 💡 Banco compartilhado: dados sincronizados entre ambientes
+)
 echo.
 goto :end
 
@@ -111,6 +175,11 @@ echo =========================================
 echo   CONFIGURACAO PARA PRODUCAO
 echo =========================================
 echo.
+
+echo [0/6] Criando launchSettings.json para Visual Studio...
+powershell -Command "Copy-Item 'CoreApiBase\Properties\launchSettings.template.json' 'CoreApiBase\Properties\launchSettings.json' -Force; Write-Host '✅ launchSettings.json criado a partir do template'"
+echo.
+
 echo ⚠️  ATENCAO: Em producao use chaves personalizadas e seguras!
 echo.
 

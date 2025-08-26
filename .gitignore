@@ -9,6 +9,9 @@ out/
 *.userosscache
 *.sln.docstates
 
+# Environment files (contains secrets)
+.env.docker
+
 # Visual Studio 2022
 .vs/
 .vscode/
@@ -77,6 +80,7 @@ CoreApiBase/appdb.sqlite
 # =================================================
 # SECRETS E CONFIGURAÇÕES SENSÍVEIS  
 # =================================================
+
 
 # Arquivo de configuração real (NÃO commitar)
 secrets.env

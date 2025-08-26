@@ -41,11 +41,17 @@ dotnet run
 setup-configuration.bat Docker    # Windows  
 ./setup-configuration.sh Docker   # Linux/Mac
 
+# Escolha o tipo de banco:
+# 1. Volume isolado (padrão) - bancos separados
+# 2. Banco compartilhado - mesmo banco local e Docker
+
 # Execute
 docker-compose up -d
 
 # Acesse: http://localhost:8080/swagger
 ```
+
+**💡 Configuração de Banco:** Veja [DOCKER_DATABASE_CONFIG.md](./DOCKER_DATABASE_CONFIG.md) para detalhes sobre bancos isolados vs compartilhados.
 
 ---
 
@@ -69,19 +75,25 @@ docker-compose up -d
    - **Swagger:** `http://localhost:5099/swagger`
 
 #### **Opção 2: Docker no Visual Studio**
-1. **Configure para Docker:**
+1. **⚠️ IMPORTANTE: Configure para Docker primeiro:**
    ```bash
    setup-configuration.bat docker
    ```
 
 2. **No Visual Studio:**
-   - Selecione profile **"Container (Dockerfile)"**
+   - Selecione profile **"Container (Dockerfile)"** para desenvolvimento
+   - OU selecione **"Docker (Production)"** para produção
    - Pressione `F5` para debug em container
-   - OU selecione **"Docker Compose"** para orquestração completa
 
 3. **URLs Docker:**
    - **API:** `http://localhost:8080`
    - **Swagger:** `http://localhost:8080/swagger`
+
+**💡 Nota:** O script configura automaticamente as variáveis de ambiente no `launchSettings.json` para o Visual Studio usar.
+
+**� Segurança:** O arquivo `launchSettings.template.json` (sem secrets) é versionado no Git, enquanto o arquivo real `launchSettings.json` é ignorado pelo `.gitignore`. Todos os scripts de configuração (`Development`, `Docker`, `Production`) criam automaticamente o arquivo real a partir do template, mantendo as credenciais seguras.
+
+**�📖 Guia Completo:** Veja [VISUAL_STUDIO_DOCKER.md](./VISUAL_STUDIO_DOCKER.md) para detalhes completos e troubleshooting.
 
 #### **Opção 3: Release Mode (Produção)**
 1. **Configure para Release:**
@@ -1466,6 +1478,15 @@ SOFTWARE.
 - [GitHub Discussions](https://github.com/EricCoisa/AspNetCoreApiBase/discussions) - Discussões
 - [Stack Overflow - ASP.NET Core](https://stackoverflow.com/questions/tagged/asp.net-core) - Q&A
 - [.NET Community](https://dotnet.microsoft.com/platform/community) - Comunidade oficial
+
+---
+
+## 📖 Documentação Adicional
+
+- **[Configuração de Banco de Dados Docker](DOCKER_DATABASE_CONFIG.md)** - Opções de volume isolado vs compartilhado
+- **[Banco de Dados Personalizado](CUSTOM_DATABASE.md)** - Como usar seu próprio banco
+- **[Visual Studio + Docker](VISUAL_STUDIO_DOCKER.md)** - Guia completo para desenvolvimento em containers
+- **[Troubleshooting Docker](VISUAL_STUDIO_DOCKER_TROUBLESHOOTING.md)** - Soluções para problemas comuns
 
 ### **📊 Status do Projeto**
 
