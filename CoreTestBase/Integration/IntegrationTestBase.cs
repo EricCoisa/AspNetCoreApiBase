@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.Extensions.Options;
 using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Localization;
 
 namespace CoreTestBase.Integration
 {
@@ -36,25 +37,67 @@ namespace CoreTestBase.Integration
     public class IntegrationWebApplicationFactory : WebApplicationFactory<Program>
     {
         private static int _databaseId = 0;
+        private static readonly string _dynamicJwtKey = GenerateValidJwtKey();
+
+        /// <summary>
+        /// Gera uma chave JWT válida e segura para testes
+        /// </summary>
+        private static string GenerateValidJwtKey()
+        {
+            // Gera uma chave de 64 caracteres (512 bits) usando caracteres seguros
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random(DateTime.Now.Millisecond);
+            return new string(Enumerable.Repeat(chars, 64)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         // IMPORTANTE: ConfigureAppConfiguration deve vir primeiro
         builder.ConfigureAppConfiguration((context, config) =>
         {
-            // Configurações específicas para testes
+            // Configurações específicas para testes que passem na validação do health check
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
+                // Connection strings
                 {"ConnectionStrings:DefaultConnection", "DataSource=:memory:"},
-                {"JwtSettings:SecretKey", "test-secret-key-for-integration-tests-must-be-long-enough-to-pass-validation"},
-                {"JwtSettings:Issuer", "TestIssuer"},
-                {"JwtSettings:Audience", "TestAudience"},
-                {"JwtSettings:ExpiresInMinutes", "60"},
-                {"CorsSettings:Origins", "http://localhost:3000,https://localhost:3001"},
+                
+                // JWT Settings - configuração completa e válida com URLs e chave dinâmica
+                {"JwtSettings:SecretKey", _dynamicJwtKey},
+                {"JwtSettings:Issuer", "https://localhost:5001"},
+                {"JwtSettings:Audience", "https://localhost:5001"},
+                {"JwtSettings:ExpiryMinutes", "60"},
+                {"JwtSettings:ExpirationTimeInMinutes", "60"},
+                
+                // Database Settings - configuração completa
                 {"DatabaseSettings:ConnectionString", "DataSource=:memory:"},
                 {"DatabaseSettings:Provider", "InMemory"},
                 {"DatabaseSettings:AutoMigrate", "false"},
-                {"Environment", "Testing"}
+                {"DatabaseSettings:SeedData", "false"},
+                {"DatabaseSettings:CommandTimeout", "30"},
+                {"DatabaseSettings:LogLevel", "Warning"},
+                {"DatabaseSettings:EnableSensitiveDataLogging", "true"},
+                
+                // CORS Settings - configuração detalhada para validação
+                {"CorsSettings:AllowedOrigins:0", "http://localhost:3000"},
+                {"CorsSettings:AllowedOrigins:1", "https://localhost:3001"},
+                {"CorsSettings:AllowedMethods:0", "GET"},
+                {"CorsSettings:AllowedMethods:1", "POST"},
+                {"CorsSettings:AllowedMethods:2", "PUT"},
+                {"CorsSettings:AllowedMethods:3", "DELETE"},
+                {"CorsSettings:AllowedMethods:4", "OPTIONS"},
+                {"CorsSettings:AllowedHeaders:0", "*"},
+                {"CorsSettings:AllowCredentials", "false"},
+                {"CorsSettings:PreflightMaxAge", "3600"},
+                
+                // Environment e cultura
+                {"Environment", "Testing"},
+                
+                // Configurações de localização para inglês
+                {"RequestLocalizationOptions:DefaultRequestCulture:Culture", "en-US"},
+                {"RequestLocalizationOptions:DefaultRequestCulture:UICulture", "en-US"},
+                {"RequestLocalizationOptions:SupportedCultures:0", "en-US"},
+                {"RequestLocalizationOptions:SupportedUICultures:0", "en-US"}
             });
         });
 
@@ -75,6 +118,9 @@ namespace CoreTestBase.Integration
                 services.Remove(serviceDb);
             }
 
+            // Usar a chave JWT gerada dinamicamente
+            var dynamicJwtKey = _dynamicJwtKey;
+            
             // Remove o JwtSettings existente e adiciona um customizado para testes
             var jwtDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(JwtSettings));
             if (jwtDescriptor != null)
@@ -82,12 +128,12 @@ namespace CoreTestBase.Integration
                 services.Remove(jwtDescriptor);
             }
             
-            // Adiciona JwtSettings para testes
+            // Adiciona JwtSettings para testes com chave gerada dinamicamente
             var testJwtSettings = new JwtSettings
             {
-                SecretKey = "test-secret-key-for-integration-tests-must-be-long-enough-to-pass-validation",
-                Issuer = "TestIssuer",
-                Audience = "TestAudience",
+                SecretKey = dynamicJwtKey,
+                Issuer = "https://localhost:5001",
+                Audience = "https://localhost:5001",
                 ExpiryMinutes = 60
             };
             services.AddSingleton(testJwtSettings);
@@ -149,6 +195,15 @@ namespace CoreTestBase.Integration
             // Adicionar health checks para testes
             services.AddHealthChecks();
 
+            // Configurar localização para inglês nos testes
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                var supportedCultures = new[] { "en-US" };
+                options.SetDefaultCulture("en-US")
+                    .AddSupportedCultures(supportedCultures)
+                    .AddSupportedUICultures(supportedCultures);
+            });
+
             // Adicionar controllers do CoreApiBase explicitamente
             services.AddControllers()
                 .AddApplicationPart(typeof(CoreApiBase.Controllers.HealthController).Assembly);
@@ -175,6 +230,14 @@ namespace CoreTestBase.Integration
         {
             // Pipeline simplificado para testes, sem middlewares que podem causar problemas
             app.UseRouting();
+            
+            // Configurar localização para inglês
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("en-US"),
+                SupportedCultures = new[] { new System.Globalization.CultureInfo("en-US") },
+                SupportedUICultures = new[] { new System.Globalization.CultureInfo("en-US") }
+            });
             
             // CORS para testes
             app.UseCors();
