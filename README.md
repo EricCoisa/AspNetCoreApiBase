@@ -153,6 +153,19 @@ Este script único automatiza:
 - ✅ Preparação de Docker Secrets para produção
 - ✅ Validação de configurações
 
+### Script de Limpeza
+
+Para testar do zero ou limpar configurações antigas:
+
+- `cleanup-secrets.bat` (Windows)
+- `cleanup-secrets.sh` (Linux/Mac)
+
+Este script remove:
+- 🧹 Todos os User Secrets
+- 🧹 Pasta secrets/ e arquivos de configuração
+- 🧹 Containers e volumes Docker
+- 🧹 Bancos de dados SQLite locais
+
 ## 📊 Health Checks
 
 A aplicação inclui endpoints de saúde integrados ao Swagger:
