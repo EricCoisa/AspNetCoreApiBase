@@ -62,7 +62,7 @@ public static class ConfigurationSetupHelper
             // Caminho do arquivo HTML fixo
             var htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "configRequired.html");
 
-            // Mostrar mensagem no console (sempre disponível)
+            // Mostrar mensagem no console (sempre disponível)/
             ShowConsoleMessage(missingConfigurations, htmlFilePath);
 
             // Só tentar abrir navegador se NÃO estivermos em container

@@ -28,11 +28,8 @@ services:
       - JwtSettings__ExpiryMinutes=180
       
     volumes:
-      # OPCAO 1: Volume isolado (padrao) - banco separado do desenvolvimento
-      #       - sqlite_data:/app/data
-      
-      # OPCAO 2: Banco compartilhado com desenvolvimento - descomente para usar
-      - ./CoreApiBase:/app/data
+      # Volume isolado (padrão) - banco separado do desenvolvimento
+      - sqlite_data:/app/data
       
     # Docker Secrets
     secrets:

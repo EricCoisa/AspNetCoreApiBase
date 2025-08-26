@@ -41,17 +41,15 @@ dotnet run
 setup-configuration.bat Docker    # Windows  
 ./setup-configuration.sh Docker   # Linux/Mac
 
-# Escolha o tipo de banco:
-# 1. Volume isolado (padrão) - bancos separados
-# 2. Banco compartilhado - mesmo banco local e Docker
-
 # Execute
+# O banco de dados do Docker é sempre isolado do banco local
+# (volume próprio, não compartilhado)
 docker-compose up -d
 
 # Acesse: http://localhost:8080/swagger
 ```
 
-**💡 Configuração de Banco:** Veja [DOCKER_DATABASE_CONFIG.md](./DOCKER_DATABASE_CONFIG.md) para detalhes sobre bancos isolados vs compartilhados.
+**💡 Configuração de Banco:** O banco de dados do Docker é sempre isolado do banco local. Não há suporte para compartilhamento direto do arquivo SQLite entre host e container.
 
 ---
 
@@ -692,10 +690,7 @@ setup-configuration.bat Development --no-migrate
 - ✅ Você mantém controle total sobre o schema do banco
 - ✅ Pode usar SQL Server, PostgreSQL, MySQL, etc.
 
-### **📖 Documentação Completa**
-
-Para configuração detalhada de bancos customizados, veja:
-**[CUSTOM_DATABASE.md](./CUSTOM_DATABASE.md)** - Guia completo com exemplos para SQL Server, PostgreSQL, MySQL e mais.
+**O banco de dados do Docker é sempre isolado do banco local.**
 
 ---
 
@@ -1405,11 +1400,13 @@ public void GetUserById_ExistingUser_ReturnsUserDto()
 - [JWT.IO](https://jwt.io/) - Debug de tokens JWT
 - [Swagger Editor](https://editor.swagger.io/) - Editar OpenAPI specs
 
-#### **Ferramentas Úteis**
-- **Postman**: Teste de APIs ([Download](https://www.postman.com/downloads/))
-- **DB Browser for SQLite**: Visualizar banco SQLite ([Download](https://sqlitebrowser.org/))
-- **Docker Desktop**: Desenvolvimento com containers ([Download](https://www.docker.com/products/docker-desktop))
-- **Git**: Controle de versão ([Download](https://git-scm.com/))
+#### **Ferramentas e Recursos**
+- [.NET 8 Download](https://dotnet.microsoft.com/download/dotnet/8.0) - Runtime e SDK
+- [Visual Studio 2022](https://visualstudio.microsoft.com/) - IDE completa
+- [VS Code](https://code.visualstudio.com/) - Editor multiplataforma
+- [Docker Desktop](https://www.docker.com/products/docker-desktop) - Docker para desenvolvimento
+- [Postman](https://www.postman.com/) - Teste de APIs
+- [DB Browser for SQLite](https://sqlitebrowser.org/) - Visualizador SQLite
 
 #### **Extensões Recomendadas**
 
