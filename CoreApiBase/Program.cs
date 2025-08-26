@@ -50,6 +50,10 @@ builder.Configuration.AddDockerSecrets(secrets =>
            .WithIgnoreErrors(true); // Ignora erros se secrets não existirem
 });
 
+// ⚠️ VERIFICAÇÃO CRÍTICA: Validar configurações obrigatórias antes de prosseguir
+// Se as configurações estão faltando, mostra página de instruções e para a execução
+ConfigurationSetupHelper.ValidateRequiredConfigurationsOrShowSetupPage(builder.Configuration, builder.Environment);
+
 // Configure JWT Settings
 var jwtSettings = new JwtSettings();
 builder.Configuration.GetSection("JwtSettings").Bind(jwtSettings);
