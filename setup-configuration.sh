@@ -53,7 +53,7 @@ setup_development() {
     
     echo
     echo "========================================="
-    echo "  ✅ DESENVOLVIMENTO CONFIGURADO!"
+    echo "  [OK] DESENVOLVIMENTO CONFIGURADO!"
     echo "========================================="
     echo
     echo "Agora execute:"
@@ -96,7 +96,7 @@ setup_docker() {
     
     echo
     echo "========================================="
-    echo "  ✅ DOCKER CONFIGURADO!"
+    echo "  [OK] DOCKER CONFIGURADO!"
     echo "========================================="
     echo
     echo "Agora execute:"
@@ -116,20 +116,20 @@ setup_production() {
     echo "  CONFIGURAÇÃO PARA PRODUÇÃO"
     echo "========================================="
     echo
-    echo "⚠️  ATENÇÃO: Em produção use chaves personalizadas e seguras!"
+    echo "[ATENÇÃO] Em produção use chaves personalizadas e seguras!"
     echo
 
     echo "[1/6] Configure sua chave JWT (mínimo 64 caracteres):"
     read -p "JWT SecretKey: " PROD_JWT_KEY
     if [ -z "$PROD_JWT_KEY" ]; then
-        echo "❌ Chave JWT obrigatória para produção!"
+        echo "[ERRO] Chave JWT obrigatória para produção!"
         exit 1
     fi
 
     echo "[2/6] Configure a connection string da base de dados:"
     read -p "Database Connection: " PROD_DB_CONN
     if [ -z "$PROD_DB_CONN" ]; then
-        echo "❌ Connection string obrigatória para produção!"
+        echo "[ERRO] Connection string obrigatória para produção!"
         exit 1
     fi
 
@@ -163,19 +163,19 @@ EOF
     echo "[6/6] Configuração de produção concluída!"
     echo
     echo "========================================="
-    echo "  ✅ PRODUÇÃO CONFIGURADA!"
+    echo "  [OK] PRODUÇÃO CONFIGURADA!"
     echo "========================================="
     echo
-    echo "📄 Arquivo criado: production.env"
+    echo "[ARQUIVO] production.env"
     echo
-    echo "🔒 PRÓXIMOS PASSOS:"
+    echo "[PRÓXIMOS PASSOS]:"
     echo "1. Revise o arquivo production.env"
     echo "2. Configure as variáveis em seu servidor"
     echo "3. NUNCA commite o arquivo production.env no Git"
     echo "4. Use HTTPS em produção"
     echo "5. Configure backups da base de dados"
     echo
-    echo "🐳 Para Docker:"
+    echo "[DOCKER]:"
     echo "  docker run --env-file production.env -p 80:8080 coreapi:latest"
     echo
     
@@ -211,12 +211,12 @@ echo "================================================="
 echo
 if [ ! -z "$JWT_KEY" ]; then
     echo "========================================="
-    echo "  🔑 SUA CHAVE JWT GERADA:"
+    echo "  [JWT] SUA CHAVE JWT GERADA:"
     echo "  $JWT_KEY"
     echo "========================================="
-    echo "  💾 Salve esta chave em local seguro!"
+    echo "  [IMPORTANTE] Salve esta chave em local seguro!"
     echo
 fi
-echo "💡 Dica: Para reconfigurar, execute novamente"
+echo "[DICA] Para reconfigurar, execute novamente"
 echo "   ./setup-configuration.sh <Environment>"
 echo

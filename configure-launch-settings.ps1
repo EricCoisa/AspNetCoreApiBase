@@ -30,4 +30,4 @@ $newJsonContent = $jsonContent -replace '"ASPNETCORE_URLS": "http://\+:8080"', $
 # Salvar o arquivo
 $newJsonContent | Set-Content 'CoreApiBase\Properties\launchSettings.json' -Encoding UTF8
 
-Write-Host "✅ Visual Studio Docker configurado (template → arquivo real com formatação preservada)" -ForegroundColor Green
+Write-Host "[OK] Visual Studio Docker configurado (template -> arquivo real com formatacao preservada)" -ForegroundColor Green

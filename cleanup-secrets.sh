@@ -12,24 +12,24 @@ echo
 echo "[1/6] Limpando User Secrets..."
 cd CoreApiBase
 if dotnet user-secrets clear 2>/dev/null; then
-    echo "✅ User Secrets limpos"
+    echo "[OK] User Secrets limpos"
 else
-    echo "ℹ️  Nenhum User Secret encontrado"
+    echo "[INFO] Nenhum User Secret encontrado"
 fi
 cd ..
 
 echo "[2/6] Removendo arquivos de secrets locais..."
 if [ -d "secrets" ]; then
     rm -rf secrets
-    echo "✅ Pasta secrets removida"
+    echo "[OK] Pasta secrets removida"
 else
-    echo "ℹ️  Pasta secrets não encontrada"
+    echo "[INFO] Pasta secrets não encontrada"
 fi
 
 echo "[3/6] Removendo arquivo de configuração local..."
 if [ -f "secrets.env" ]; then
     rm secrets.env
-    echo "✅ secrets.env removido"
+    echo "[OK] secrets.env removido"
 fi
 
 echo "[4/6] Parando containers Docker..."
@@ -44,16 +44,16 @@ docker volume rm aspnetcoreapibase_coreapi_data 2>/dev/null
 echo "[6/6] Limpando banco de dados local..."
 if [ -f "CoreApiBase/appdb.sqlite" ]; then
     rm CoreApiBase/appdb.sqlite
-    echo "✅ Banco SQLite local removido"
+    echo "[OK] Banco SQLite local removido"
 fi
 if [ -f "CoreApiBase/app.sqlite" ]; then
     rm CoreApiBase/app.sqlite
-    echo "✅ Banco SQLite alternativo removido"
+    echo "[OK] Banco SQLite alternativo removido"
 fi
 
 echo
 echo "========================================="
-echo "  ✅ LIMPEZA COMPLETA REALIZADA!"
+echo "  [OK] LIMPEZA COMPLETA REALIZADA!"
 echo "========================================="
 echo
 echo "Agora você pode testar do zero:"

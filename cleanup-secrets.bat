@@ -10,24 +10,24 @@ echo [1/7] Limpando User Secrets...
 cd CoreApiBase
 dotnet user-secrets clear 2>nul
 if %ERRORLEVEL% EQU 0 (
-    echo ✅ User Secrets limpos
+    echo [OK] User Secrets limpos
 ) else (
-    echo ℹ️  Nenhum User Secret encontrado
+    echo [INFO] Nenhum User Secret encontrado
 )
 cd ..
 
 echo [2/7] Removendo arquivos de secrets locais...
 if exist secrets (
     rmdir /s /q secrets
-    echo ✅ Pasta secrets removida
+    echo [OK] Pasta secrets removida
 ) else (
-    echo ℹ️  Pasta secrets não encontrada
+    echo [INFO] Pasta secrets não encontrada
 )
 
 echo [3/7] Removendo arquivo de configuração local...
 if exist secrets.env (
     del secrets.env
-    echo ✅ secrets.env removido
+    echo [OK] secrets.env removido
 )
 
 echo [4/7] Parando containers Docker...
@@ -42,24 +42,24 @@ docker volume rm aspnetcoreapibase_coreapi_data 2>nul
 echo [6/7] Limpando banco de dados local...
 if exist CoreApiBase\appdb.sqlite (
     del CoreApiBase\appdb.sqlite
-    echo ✅ Banco SQLite local removido
+    echo [OK] Banco SQLite local removido
 )
 if exist CoreApiBase\app.sqlite (
     del CoreApiBase\app.sqlite
-    echo ✅ Banco SQLite alternativo removido
+    echo [OK] Banco SQLite alternativo removido
 )
 if exist CoreApiBase\appdb-dev.sqlite (
     del CoreApiBase\appdb-dev.sqlite
-    echo ✅ Banco SQLite Development removido
+    echo [OK] Banco SQLite Development removido
 )
 
 echo [7/7] Removendo configurações sensíveis dos appsettings...
 powershell -Command "$json = Get-Content 'CoreApiBase\appsettings.Development.json' | ConvertFrom-Json; $json.JwtSettings.PSObject.Properties.Remove('SecretKey'); $json.DatabaseSettings.PSObject.Properties.Remove('ConnectionString'); $json | ConvertTo-Json -Depth 10 | Set-Content 'CoreApiBase\appsettings.Development.json'"
-echo ✅ Configurações sensíveis removidas do appsettings.Development.json
+echo [OK] Configurações sensíveis removidas do appsettings.Development.json
 
 echo.
 echo =========================================
-echo   ✅ LIMPEZA COMPLETA REALIZADA!
+echo   [OK] LIMPEZA COMPLETA REALIZADA!
 echo =========================================
 echo.
 echo Agora você pode testar do zero:

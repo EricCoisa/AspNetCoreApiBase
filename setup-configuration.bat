@@ -59,11 +59,11 @@ cd ..
 
 echo.
 echo [Bonus] Criando launchSettings.json para Visual Studio...
-powershell -Command "Copy-Item 'CoreApiBase\Properties\launchSettings.template.json' 'CoreApiBase\Properties\launchSettings.json' -Force; Write-Host '✅ launchSettings.json criado a partir do template'"
+powershell -Command "Copy-Item 'CoreApiBase\Properties\launchSettings.template.json' 'CoreApiBase\Properties\launchSettings.json' -Force; Write-Host '[OK] launchSettings.json criado a partir do template'"
 
 echo.
 echo =========================================
-echo   ✅ DESENVOLVIMENTO CONFIGURADO!
+echo   [OK] DESENVOLVIMENTO CONFIGURADO!
 echo =========================================
 echo.
 echo Agora execute:
@@ -117,8 +117,8 @@ if "%DOCKER_DB_CHOICE%"=="2" (
     powershell -Command "(Get-Content docker-compose.yml) -replace '^(\s*- sqlite_data:/app/data)$', '      # $1' | Set-Content docker-compose.yml"
     powershell -Command "(Get-Content docker-compose.yml) -replace '^(\s*#\s*- \./CoreApiBase:/app/data)$', '      - ./CoreApiBase:/app/data' | Set-Content docker-compose.yml"
     
-    echo ✅ Connection string configurada para banco compartilhado
-    echo ✅ docker-compose.yml configurado automaticamente
+    echo [OK] Connection string configurada para banco compartilhado
+    echo [OK] docker-compose.yml configurado automaticamente
     echo.
     set "SHARED_DB=true"
 ) else (
@@ -130,8 +130,8 @@ if "%DOCKER_DB_CHOICE%"=="2" (
     powershell -Command "(Get-Content docker-compose.yml) -replace '^(\s*#\s*- sqlite_data:/app/data)$', '      - sqlite_data:/app/data' | Set-Content docker-compose.yml"
     powershell -Command "(Get-Content docker-compose.yml) -replace '^(\s*- \./CoreApiBase:/app/data)$', '      # $1' | Set-Content docker-compose.yml"
     
-    echo ✅ Connection string configurada para volume isolado (padrao)
-    echo ✅ docker-compose.yml configurado automaticamente
+    echo [OK] Connection string configurada para volume isolado (padrao)
+    echo [OK] docker-compose.yml configurado automaticamente
     set "SHARED_DB=false"
 )
 
@@ -150,7 +150,7 @@ echo [Bonus] Configurando Visual Studio Docker...
 powershell -ExecutionPolicy Bypass -File configure-launch-settings.ps1
 echo.
 echo =========================================
-echo   ✅ DOCKER CONFIGURADO!
+echo   [OK] DOCKER CONFIGURADO!
 echo =========================================
 echo.
 echo Agora execute:
@@ -163,9 +163,9 @@ echo.
 echo Para parar: docker-compose down
 echo.
 if "%DOCKER_DB_CHOICE%"=="1" (
-    echo 💡 Banco isolado: dados Docker separados do desenvolvimento
+    echo [INFO] Banco isolado: dados Docker separados do desenvolvimento
 ) else (
-    echo 💡 Banco compartilhado: dados sincronizados entre ambientes
+    echo [INFO] Banco compartilhado: dados sincronizados entre ambientes
 )
 echo.
 goto :end
@@ -177,23 +177,23 @@ echo =========================================
 echo.
 
 echo [0/6] Criando launchSettings.json para Visual Studio...
-powershell -Command "Copy-Item 'CoreApiBase\Properties\launchSettings.template.json' 'CoreApiBase\Properties\launchSettings.json' -Force; Write-Host '✅ launchSettings.json criado a partir do template'"
+powershell -Command "Copy-Item 'CoreApiBase\Properties\launchSettings.template.json' 'CoreApiBase\Properties\launchSettings.json' -Force; Write-Host '[OK] launchSettings.json criado a partir do template'"
 echo.
 
-echo ⚠️  ATENCAO: Em producao use chaves personalizadas e seguras!
+echo [ATENCAO] Em producao use chaves personalizadas e seguras!
 echo.
 
 echo [1/6] Configure sua chave JWT (minimo 64 caracteres):
 set /p "PROD_JWT_KEY=JWT SecretKey: "
 if "%PROD_JWT_KEY%"=="" (
-    echo ❌ Chave JWT obrigatoria para producao!
+    echo [ERRO] Chave JWT obrigatoria para producao!
     goto :end
 )
 
 echo [2/6] Configure a connection string da base de dados:
 set /p "PROD_DB_CONN=Database Connection: "
 if "%PROD_DB_CONN%"=="" (
-    echo ❌ Connection string obrigatoria para producao!
+    echo [ERRO] Connection string obrigatoria para producao!
     goto :end
 )
 
@@ -221,19 +221,19 @@ echo # docker run --env-file production.env -p 80:8080 coreapi:latest >> product
 echo [6/6] Configuracao de producao concluida!
 echo.
 echo =========================================
-echo   ✅ PRODUCAO CONFIGURADA!
+echo   [OK] PRODUCAO CONFIGURADA!
 echo =========================================
 echo.
-echo 📄 Arquivo criado: production.env
+echo [ARQUIVO] production.env
 echo.
-echo 🔒 PROXIMOS PASSOS:
+echo [PROXIMOS PASSOS]:
 echo 1. Revise o arquivo production.env
 echo 2. Configure as variaveis em seu servidor
 echo 3. NUNCA commite o arquivo production.env no Git
 echo 4. Use HTTPS em producao
 echo 5. Configure backups da base de dados
 echo.
-echo 🐳 Para Docker:
+echo [DOCKER]:
 echo   docker run --env-file production.env -p 80:8080 coreapi:latest
 echo.
 set "JWT_KEY=%PROD_JWT_KEY%"
@@ -246,13 +246,13 @@ echo =================================================
 echo.
 if not "%JWT_KEY%"=="" (
     echo =========================================
-    echo   🔑 SUA CHAVE JWT GERADA:
+    echo   [JWT] SUA CHAVE JWT GERADA:
     echo   %JWT_KEY%
     echo =========================================
-    echo   💾 Salve esta chave em local seguro!
+    echo   [IMPORTANTE] Salve esta chave em local seguro!
     echo.
 )
-echo 💡 Dica: Para reconfigurar, execute novamente
+echo [DICA] Para reconfigurar, execute novamente
 echo    setup-configuration.bat ^<Environment^>
 echo.
 pause
