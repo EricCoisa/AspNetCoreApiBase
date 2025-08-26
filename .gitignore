@@ -93,3 +93,7 @@ temp_jwt_key.txt
 *.sqlite
 *.sqlite-*
 *.db
+
+# Arquivos de configuração de produção
+production.env
+*.env.production

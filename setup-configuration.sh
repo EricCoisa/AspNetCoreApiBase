@@ -116,23 +116,70 @@ setup_production() {
     echo "  CONFIGURAÇÃO PARA PRODUÇÃO"
     echo "========================================="
     echo
-    echo "❌ Para produção, configure manualmente com:"
+    echo "⚠️  ATENÇÃO: Em produção use chaves personalizadas e seguras!"
     echo
-    echo "1. Azure Key Vault / AWS Secrets Manager"
-    echo "2. Variáveis de ambiente seguras"
-    echo "3. Certificados SSL válidos"
-    echo "4. Connection strings de produção"
+
+    echo "[1/6] Configure sua chave JWT (mínimo 64 caracteres):"
+    read -p "JWT SecretKey: " PROD_JWT_KEY
+    if [ -z "$PROD_JWT_KEY" ]; then
+        echo "❌ Chave JWT obrigatória para produção!"
+        exit 1
+    fi
+
+    echo "[2/6] Configure a connection string da base de dados:"
+    read -p "Database Connection: " PROD_DB_CONN
+    if [ -z "$PROD_DB_CONN" ]; then
+        echo "❌ Connection string obrigatória para produção!"
+        exit 1
+    fi
+
+    echo "[3/6] Configure o domínio/URL do seu sistema:"
+    read -p "Domínio (ex: https://meuapp.com): " PROD_DOMAIN
+    if [ -z "$PROD_DOMAIN" ]; then
+        PROD_DOMAIN="https://localhost"
+    fi
+
+    echo "[4/6] Configure domínios CORS permitidos:"
+    read -p "CORS Origins (separados por vírgula): " PROD_CORS
+    if [ -z "$PROD_CORS" ]; then
+        PROD_CORS="$PROD_DOMAIN"
+    fi
+
+    echo "[5/6] Criando arquivo de variáveis de ambiente para produção..."
+    cat > production.env << EOF
+# Configuração de Produção - ASP.NET Core API Base
+# Copie estas variáveis para seu ambiente de produção
+
+JWT_SECRET_KEY=$PROD_JWT_KEY
+JWT_ISSUER=$PROD_DOMAIN
+JWT_AUDIENCE=$PROD_DOMAIN
+DATABASE_CONNECTION_STRING=$PROD_DB_CONN
+CORS_ALLOWED_ORIGINS=$PROD_CORS
+
+# Para Docker:
+# docker run --env-file production.env -p 80:8080 coreapi:latest
+EOF
+
+    echo "[6/6] Configuração de produção concluída!"
     echo
-    echo "Exemplo de variáveis de ambiente:"
-    echo "  JWT_SECRET_KEY=<chave-256-bits-segura>"
-    echo "  DATABASE_CONNECTION_STRING=<connection-string-produção>"
-    echo "  CORS_ALLOWED_ORIGINS=<domínios-produção>"
+    echo "========================================="
+    echo "  ✅ PRODUÇÃO CONFIGURADA!"
+    echo "========================================="
     echo
-    echo "Exemplo de comando Docker para produção:"
-    echo "  docker run -e JWT_SECRET_KEY=\"\$JWT_SECRET\" \\"
-    echo "             -e DATABASE_CONNECTION_STRING=\"\$DB_CONN\" \\"
-    echo "             -p 80:8080 coreapi:latest"
+    echo "📄 Arquivo criado: production.env"
     echo
+    echo "🔒 PRÓXIMOS PASSOS:"
+    echo "1. Revise o arquivo production.env"
+    echo "2. Configure as variáveis em seu servidor"
+    echo "3. NUNCA commite o arquivo production.env no Git"
+    echo "4. Use HTTPS em produção"
+    echo "5. Configure backups da base de dados"
+    echo
+    echo "🐳 Para Docker:"
+    echo "  docker run --env-file production.env -p 80:8080 coreapi:latest"
+    echo
+    
+    JWT_KEY="$PROD_JWT_KEY"
 }
 
 # Executa configuração baseada no ambiente
@@ -161,6 +208,14 @@ echo "================================================="
 echo "  Configuração concluída!"
 echo "================================================="
 echo
+if [ ! -z "$JWT_KEY" ]; then
+    echo "========================================="
+    echo "  🔑 SUA CHAVE JWT GERADA:"
+    echo "  $JWT_KEY"
+    echo "========================================="
+    echo "  💾 Salve esta chave em local seguro!"
+    echo
+fi
 echo "💡 Dica: Para reconfigurar, execute novamente"
 echo "   ./setup-configuration.sh <Environment>"
 echo

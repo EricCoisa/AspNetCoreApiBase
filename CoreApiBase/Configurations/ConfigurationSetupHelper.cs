@@ -40,7 +40,7 @@ public static class ConfigurationSetupHelper
         try
         {
             // Caminho do arquivo HTML fixo
-            var htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "configuracao-necessaria.html");
+            var htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "configRequired.html");
 
             // Mostrar mensagem no console (se disponível)
             ShowConsoleMessage(missingConfigurations, htmlFilePath);
