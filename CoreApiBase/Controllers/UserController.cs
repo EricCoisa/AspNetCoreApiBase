@@ -9,6 +9,8 @@ using CoreDomainBase.Enums;
 using AutoMapper;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using CoreApiBase.Resources;
 
 namespace CoreApiBase.Controllers
 {
@@ -19,12 +21,14 @@ namespace CoreApiBase.Controllers
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
         private readonly AuthService _authService;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public UserController(IUserService userService, IMapper mapper, AuthService authService)
+        public UserController(IUserService userService, IMapper mapper, AuthService authService, IStringLocalizer<SharedResource> localizer)
         {
             _userService = userService;
             _mapper = mapper;
             _authService = authService;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -43,7 +47,7 @@ namespace CoreApiBase.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error retrieving users: {ex.Message}" });
+                return StatusCode(500, new { message = _localizer["ErrorRetrievingUsers", ex.Message] });
             }
         }
 
@@ -67,14 +71,14 @@ namespace CoreApiBase.Controllers
 
                 var user = await _userService.GetByIdAsync(id);
                 if (user == null)
-                    return NotFound(new { message = "User not found" });
+                    return NotFound(new { message = _localizer["UserNotFound"] });
 
                 var userDto = _mapper.Map<UserDto>(user);
                 return Ok(userDto);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error retrieving user: {ex.Message}" });
+                return StatusCode(500, new { message = _localizer["ErrorRetrievingUser", ex.Message] });
             }
         }
 
@@ -96,7 +100,7 @@ namespace CoreApiBase.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error creating user: {ex.Message}" });
+                return StatusCode(500, new { message = _localizer["ErrorCreatingUser", ex.Message] });
             }
         }
 
@@ -125,7 +129,7 @@ namespace CoreApiBase.Controllers
                 // Get current user from database
                 var existingUser = await _userService.GetByIdAsync(id);
                 if (existingUser == null)
-                    return NotFound(new { message = "User not found" });
+                    return NotFound(new { message = _localizer["UserNotFound"] });
 
                 var user = _mapper.Map<User>(userDto);
 
@@ -141,7 +145,7 @@ namespace CoreApiBase.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error updating user: {ex.Message}" });
+                return StatusCode(500, new { message = _localizer["ErrorUpdatingUser", ex.Message] });
             }
         }
 
@@ -158,13 +162,13 @@ namespace CoreApiBase.Controllers
             {
                 var result = await _userService.DeleteAsync(id);
                 if (!result)
-                    return NotFound(new { message = "User not found" });
+                    return NotFound(new { message = _localizer["UserNotFound"] });
 
                 return NoContent();
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error deleting user: {ex.Message}" });
+                return StatusCode(500, new { message = _localizer["ErrorDeletingUser", ex.Message] });
             }
         }
 

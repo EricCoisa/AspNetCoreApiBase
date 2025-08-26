@@ -9,6 +9,8 @@ using AutoMapper;
 using System.Threading.Tasks;
 using System.Linq;
 using CoreDomainBase.Interfaces.Services;
+using Microsoft.Extensions.Localization;
+using CoreApiBase.Resources;
 
 namespace CoreApiBase.Controllers
 {
@@ -19,12 +21,14 @@ namespace CoreApiBase.Controllers
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
         private readonly AuthService _authService;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public AuthenticationController(IUserService userService, IMapper mapper, AuthService authService)
+        public AuthenticationController(IUserService userService, IMapper mapper, AuthService authService, IStringLocalizer<SharedResource> localizer)
         {
             _userService = userService;
             _mapper = mapper;
             _authService = authService;
+            _localizer = localizer;
         }
 
         /// <summary>
@@ -41,7 +45,7 @@ namespace CoreApiBase.Controllers
                 var existingUsers = await _userService.GetAllAsync();
                 if (existingUsers.Any(u => u.Username == registerDto.Username || u.Email == registerDto.Email))
                 {
-                    return BadRequest(new { message = "Username or email already exists" });
+                    return BadRequest(new { message = _localizer["UserExistsAlready"] });
                 }
 
                 var user = new User
@@ -59,12 +63,12 @@ namespace CoreApiBase.Controllers
                 {
                     token,
                     user = _mapper.Map<UserDto>(createdUser),
-                    message = "User registered successfully"
+                    message = _localizer["UserRegisteredSuccessfully"]
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Registration failed: {ex.Message}" });
+                return StatusCode(500, new { message = _localizer["RegistrationFailed", ex.Message] });
             }
         }
 
@@ -84,7 +88,7 @@ namespace CoreApiBase.Controllers
 
                 if (user == null || !_authService.VerifyPassword(loginDto.Password, user.PasswordHash))
                 {
-                    return Unauthorized(new { message = "Invalid credentials" });
+                    return Unauthorized(new { message = _localizer["InvalidCredentials"] });
                 }
 
                 var token = _authService.GenerateToken(user);
@@ -93,12 +97,12 @@ namespace CoreApiBase.Controllers
                 {
                     token,
                     user = _mapper.Map<UserDto>(user),
-                    message = "Login successful"
+                    message = _localizer["LoginSuccessful"]
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Login failed: {ex.Message}" });
+                return StatusCode(500, new { message = _localizer["LoginFailed", ex.Message] });
             }
         }
 
@@ -116,13 +120,13 @@ namespace CoreApiBase.Controllers
                 var user = await _userService.GetByIdAsync(userId);
 
                 if (user == null)
-                    return NotFound(new { message = "User not found" });
+                    return NotFound(new { message = _localizer["UserNotFound"] });
 
                 return Ok(_mapper.Map<UserDto>(user));
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error retrieving profile: {ex.Message}" });
+                return StatusCode(500, new { message = _localizer["ErrorRetrievingProfile", ex.Message] });
             }
         }
 
@@ -149,7 +153,7 @@ namespace CoreApiBase.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error retrieving token info: {ex.Message}" });
+                return StatusCode(500, new { message = _localizer["ErrorRetrievingTokenInfo", ex.Message] });
             }
         }
 
@@ -166,16 +170,16 @@ namespace CoreApiBase.Controllers
                 var id = TokenDataHandler.GetUserId(User);
                 var user = await _userService.GetByIdAsync(id);
                 if (user == null)
-                    return NotFound(new { message = "User not found" });
+                    return NotFound(new { message = _localizer["UserNotFound"] });
 
                 user.RefreshSecurityStamp();
                 await _userService.UpdateAsync(user);
 
-                return Ok(new { message = "Tokens revoked for user.", userId = user.Id });
+                return Ok(new { message = _localizer["TokensRevoked"], userId = user.Id });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error revoking tokens: {ex.Message}" });
+                return StatusCode(500, new { message = _localizer["ErrorRevokingTokens", ex.Message] });
             }
         }
     }
