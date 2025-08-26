@@ -12,32 +12,40 @@
 
 Este é um projeto starter completo para APIs ASP.NET Core com todas as configurações de segurança, Docker e desenvolvimento já prontas. O sistema inclui configuração automática de secrets, health checks, autenticação JWT e suporte completo para desenvolvimento local e produção em Docker.
 
-## 🚀 **INÍCIO RÁPIDO - Como Executar**
+## 🚀 **INÍCIO RÁPIDO**
 
-### 🎯 **Para Desenvolvedores (Primeira Vez)**
+### 🆕 **Primeiro uso (após clonar o repositório):**
 
-1. **Clone o repositório**
-   ```bash
-   git clone https://github.com/EricCoisa/AspNetCoreApiBase.git
-   cd AspNetCoreApiBase
-   ```
+```bash
+# 1. Configure o ambiente (apenas uma vez)
+setup-configuration.bat Development     # Windows
+./setup-configuration.sh Development    # Linux/Mac
 
-2. **Configure automaticamente**
-   ```bash
-   # Windows
-   setup-configuration.bat development
-   
-   # Linux/Mac
-   chmod +x setup-configuration.sh
-   ./setup-configuration.sh development
-   ```
+# 2. Execute a aplicação  
+cd CoreApiBase
+dotnet run
+```
 
-3. **Execute e acesse**
-   ```bash
-   dotnet run --project CoreApiBase
-   ```
-   - **API:** `http://localhost:5099`
-   - **Swagger:** `http://localhost:5099/swagger`
+**Pronto!** O banco será criado automaticamente na primeira execução.
+
+**Acesse:**
+- **🌐 API:** http://localhost:5099
+- **📖 Swagger:** http://localhost:5099/swagger
+- **🔍 Health:** http://localhost:5099/health
+
+---
+### 🐳 **Para Docker:**
+
+```bash
+# Configure para Docker
+setup-configuration.bat Docker    # Windows  
+./setup-configuration.sh Docker   # Linux/Mac
+
+# Execute
+docker-compose up -d
+
+# Acesse: http://localhost:8080/swagger
+```
 
 ---
 
@@ -641,6 +649,41 @@ set DATABASE_CONNECTION_STRING=Data Source=mydb.sqlite
 # Linux/Mac
 export DATABASE_CONNECTION_STRING="Data Source=mydb.sqlite"
 ```
+
+---
+
+## 🗄️ **CONFIGURAÇÃO DE BANCO DE DADOS**
+
+### **🔧 Banco de Dados Padrão (SQLite com Auto-Migration)**
+
+Por padrão, a aplicação usa SQLite com migrações automáticas:
+
+```bash
+# Configuração padrão (com auto-migration)
+setup-configuration.bat Development
+
+# O banco será criado automaticamente em: ./appdb.sqlite
+```
+
+### **🎛️ Usando Seu Próprio Banco de Dados**
+
+Se você já tem um banco de dados e quer desabilitar as migrações automáticas:
+
+```bash
+# Configure sem migrações automáticas
+setup-configuration.bat Development --no-migrate
+```
+
+**O que acontece com `--no-migrate`:**
+- ✅ AutoMigrate é configurado como `false`
+- ✅ A aplicação não tentará aplicar migrações automaticamente
+- ✅ Você mantém controle total sobre o schema do banco
+- ✅ Pode usar SQL Server, PostgreSQL, MySQL, etc.
+
+### **📖 Documentação Completa**
+
+Para configuração detalhada de bancos customizados, veja:
+**[CUSTOM_DATABASE.md](./CUSTOM_DATABASE.md)** - Guia completo com exemplos para SQL Server, PostgreSQL, MySQL e mais.
 
 ---
 

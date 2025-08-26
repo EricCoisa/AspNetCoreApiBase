@@ -36,7 +36,7 @@ setup_development() {
     dotnet user-secrets set "JwtSettings:ExpiryMinutes" "180"
     
     echo "[2/4] Configurando Database..."
-    dotnet user-secrets set "DatabaseSettings:ConnectionString" "Data Source=app.sqlite"
+    dotnet user-secrets set "DatabaseSettings:ConnectionString" "Data Source=./appdb.sqlite"
     dotnet user-secrets set "DatabaseSettings:AutoMigrate" "true"
     dotnet user-secrets set "DatabaseSettings:SeedData" "true"
     

@@ -286,6 +286,26 @@ app.MapHealthChecks("/health/config", new Microsoft.AspNetCore.Diagnostics.Healt
     }
 });
 
+// Auto migrate database if enabled
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var dbSettings = scope.ServiceProvider.GetRequiredService<Microsoft.Extensions.Options.IOptions<DatabaseSettings>>().Value;
+    
+    if (dbSettings.AutoMigrate)
+    {
+        try
+        {
+            context.Database.Migrate();
+            Console.WriteLine("[INFO] Database migrations applied successfully.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[ERROR] Failed to apply database migrations: {ex.Message}");
+        }
+    }
+}
+
 app.MapControllers();
 
 app.Run();

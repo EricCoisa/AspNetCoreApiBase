@@ -2,6 +2,7 @@
 setlocal EnableDelayedExpansion
 
 set "ENVIRONMENT=%~1"
+set "NO_MIGRATE=%~2"
 if "%ENVIRONMENT%"=="" set "ENVIRONMENT=Development"
 
 echo =================================================
@@ -21,13 +22,14 @@ if /i "%ENVIRONMENT%"=="Production" goto :setup_prod
 if /i "%ENVIRONMENT%"=="Prod" goto :setup_prod
 if /i "%ENVIRONMENT%"=="Release" goto :setup_prod
 
-echo Uso: setup-configuration.bat [Development^|Docker^|Production^|Release]
+echo Uso: setup-configuration.bat [Development^|Docker^|Production^|Release] [--no-migrate]
 echo.
 echo Exemplos:
-echo   setup-configuration.bat Development    # Para desenvolvimento local
-echo   setup-configuration.bat Docker         # Para containers
-echo   setup-configuration.bat Production     # Orientacoes para producao
-echo   setup-configuration.bat Release        # Orientacoes para producao (Visual Studio Release)
+echo   setup-configuration.bat Development              # Com migracoes automaticas
+echo   setup-configuration.bat Development --no-migrate # Sem migracoes automaticas  
+echo   setup-configuration.bat Docker                   # Para containers
+echo   setup-configuration.bat Production               # Orientacoes para producao
+echo   setup-configuration.bat Release                  # Orientacoes para producao (Visual Studio Release)
 pause
 exit /b 1
 
@@ -40,7 +42,7 @@ dotnet user-secrets set "JwtSettings:Audience" "https://localhost:5099"
 dotnet user-secrets set "JwtSettings:ExpiryMinutes" "180"
 
 echo [2/4] Configurando Database...
-dotnet user-secrets set "DatabaseSettings:ConnectionString" "Data Source=app.sqlite"
+dotnet user-secrets set "DatabaseSettings:ConnectionString" "Data Source=./appdb.sqlite"
 dotnet user-secrets set "DatabaseSettings:AutoMigrate" "true"
 dotnet user-secrets set "DatabaseSettings:SeedData" "true"
 
