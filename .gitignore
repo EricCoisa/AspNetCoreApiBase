@@ -80,7 +80,8 @@ CoreApiBase/appdb.sqlite
 # =================================================
 # SECRETS E CONFIGURAÇÕES SENSÍVEIS  
 # =================================================
-
+# Arquivo launchSettings.json real (contém secrets)
+CoreApiBase/Properties/launchSettings.json
 
 # Arquivo de configuração real (NÃO commitar)
 secrets.env
