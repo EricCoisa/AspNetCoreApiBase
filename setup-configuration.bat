@@ -19,13 +19,15 @@ if /i "%ENVIRONMENT%"=="Dev" goto :setup_dev
 if /i "%ENVIRONMENT%"=="Docker" goto :setup_docker
 if /i "%ENVIRONMENT%"=="Production" goto :setup_prod
 if /i "%ENVIRONMENT%"=="Prod" goto :setup_prod
+if /i "%ENVIRONMENT%"=="Release" goto :setup_prod
 
-echo Uso: setup-configuration.bat [Development^|Docker^|Production]
+echo Uso: setup-configuration.bat [Development^|Docker^|Production^|Release]
 echo.
 echo Exemplos:
 echo   setup-configuration.bat Development    # Para desenvolvimento local
 echo   setup-configuration.bat Docker         # Para containers
 echo   setup-configuration.bat Production     # Orientacoes para producao
+echo   setup-configuration.bat Release        # Orientacoes para producao (Visual Studio Release)
 pause
 exit /b 1
 

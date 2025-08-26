@@ -25,8 +25,9 @@ builder.Configuration.Sources.Clear();
 // 1. appsettings.json
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
-// 2. appsettings.{Environment}.json
-builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+// 2. appsettings.{Environment}.json (Release usa Production)
+var environmentName = builder.Environment.EnvironmentName == "Release" ? "Production" : builder.Environment.EnvironmentName;
+builder.Configuration.AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true);
 
 // 3. User Secrets (apenas em Development)
 if (builder.Environment.IsDevelopment())
@@ -36,6 +37,43 @@ if (builder.Environment.IsDevelopment())
 
 // 4. Environment Variables
 builder.Configuration.AddEnvironmentVariables();
+
+// Mapear variáveis de ambiente para configurações internas (Production/Release)
+if (builder.Environment.IsProduction() || builder.Environment.EnvironmentName == "Release")
+{
+    var memoryConfig = new Dictionary<string, string?>();
+    
+    // Mapear JWT Settings
+    var jwtSecretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
+    if (!string.IsNullOrEmpty(jwtSecretKey))
+        memoryConfig["JwtSettings:SecretKey"] = jwtSecretKey;
+    
+    var jwtIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER");
+    if (!string.IsNullOrEmpty(jwtIssuer))
+        memoryConfig["JwtSettings:Issuer"] = jwtIssuer;
+    
+    var jwtAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
+    if (!string.IsNullOrEmpty(jwtAudience))
+        memoryConfig["JwtSettings:Audience"] = jwtAudience;
+    
+    // Mapear Connection String
+    var dbConnectionString = Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING");
+    if (!string.IsNullOrEmpty(dbConnectionString))
+        memoryConfig["ConnectionStrings:DefaultConnection"] = dbConnectionString;
+    
+    // Mapear CORS Settings
+    var corsOriginsEnv = Environment.GetEnvironmentVariable("CORS_ALLOWED_ORIGINS");
+    if (!string.IsNullOrEmpty(corsOriginsEnv))
+    {
+        var corsOrigins = corsOriginsEnv.Split(',');
+        for (int i = 0; i < corsOrigins.Length; i++)
+        {
+            memoryConfig[$"CorsSettings:AllowedOrigins:{i}"] = corsOrigins[i].Trim();
+        }
+    }
+    
+    builder.Configuration.AddInMemoryCollection(memoryConfig);
+}
 
 // 5. Docker Secrets (quando em container/produção)
 builder.Configuration.AddDockerSecrets(secrets =>
@@ -50,9 +88,19 @@ builder.Configuration.AddDockerSecrets(secrets =>
            .WithIgnoreErrors(true); // Ignora erros se secrets não existirem
 });
 
-// ⚠️ VERIFICAÇÃO CRÍTICA: Validar configurações obrigatórias antes de prosseguir
+// ⚠️ VERIFICAÇÃO CRÍTICA: Validar configurações obrigatórias APÓS configuração completa
 // Se as configurações estão faltando, mostra página de instruções e para a execução
 ConfigurationSetupHelper.ValidateRequiredConfigurationsOrShowSetupPage(builder.Configuration, builder.Environment);
+
+// 🔍 DEBUG: Verificar se as variáveis foram mapeadas corretamente
+if (builder.Environment.IsProduction() || builder.Environment.EnvironmentName == "Release")
+{
+    Console.WriteLine($"[DEBUG] Environment: {builder.Environment.EnvironmentName}");
+    Console.WriteLine($"[DEBUG] JWT_SECRET_KEY env var: {Environment.GetEnvironmentVariable("JWT_SECRET_KEY")?[..20]}...");
+    Console.WriteLine($"[DEBUG] JwtSettings:SecretKey config: {builder.Configuration["JwtSettings:SecretKey"]?[..20]}...");
+    Console.WriteLine($"[DEBUG] DATABASE_CONNECTION_STRING env var: {Environment.GetEnvironmentVariable("DATABASE_CONNECTION_STRING")}");
+    Console.WriteLine($"[DEBUG] ConnectionStrings:DefaultConnection config: {builder.Configuration["ConnectionStrings:DefaultConnection"]}");
+}
 
 // Configure JWT Settings
 var jwtSettings = new JwtSettings();

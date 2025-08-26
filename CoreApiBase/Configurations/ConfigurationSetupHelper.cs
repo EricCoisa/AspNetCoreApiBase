@@ -9,7 +9,8 @@ public static class ConfigurationSetupHelper
         var missingConfigurations = new List<string>();
 
         // Verificar JWT Settings
-        var jwtSecretKey = configuration["JwtSettings:SecretKey"];
+        var jwtSecretKey = configuration["JwtSettings:SecretKey"] ?? 
+                          configuration["JWT_SECRET_KEY"];
         if (string.IsNullOrEmpty(jwtSecretKey))
         {
             missingConfigurations.Add("JWT SecretKey é obrigatório");
@@ -17,7 +18,8 @@ public static class ConfigurationSetupHelper
 
         // Verificar Connection String
         var connectionString = configuration.GetConnectionString("DefaultConnection") ?? 
-                              configuration["DatabaseSettings:ConnectionString"];
+                              configuration["DatabaseSettings:ConnectionString"] ??
+                              configuration["DATABASE_CONNECTION_STRING"];
         if (string.IsNullOrEmpty(connectionString))
         {
             missingConfigurations.Add("Connection String é obrigatória");
@@ -28,10 +30,23 @@ public static class ConfigurationSetupHelper
         {
             HandleMissingConfigurations(missingConfigurations, environment);
             
+            // Instruções específicas baseadas no ambiente
+            var setupCommand = environment.IsDevelopment() ? "development" : 
+                              environment.IsProduction() || environment.EnvironmentName == "Release" ? "release" : 
+                              "development";
+            
+            var visualStudioInstructions = "";
+            if (environment.EnvironmentName == "Release" || environment.IsProduction())
+            {
+                visualStudioInstructions = Environment.NewLine + 
+                    "💡 Para Visual Studio Release: Use o perfil 'http (Release)' ou 'https (Release)' na lista de perfis." + Environment.NewLine +
+                    "   Ou execute: start setup-configuration.bat release";
+            }
+            
             // Forçar parada da aplicação com mensagem clara
             throw new InvalidOperationException(
-                "🔧 CONFIGURAÇÃO NECESSÁRIA: Execute 'start setup-configuration.bat development' no diretório raiz do projeto. " +
-                "Arquivo 'configuracao-necessaria.html' criado com instruções detalhadas.");
+                $"🔧 CONFIGURAÇÃO NECESSÁRIA: Execute 'start setup-configuration.bat {setupCommand}' no diretório raiz do projeto. " +
+                "Arquivo 'configuracao-necessaria.html' criado com instruções detalhadas." + visualStudioInstructions);
         }
     }
 

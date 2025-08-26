@@ -20,6 +20,26 @@
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7225;http://localhost:5099"
     },
+    "http (Release)": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Release"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5099"
+    },
+    "https (Release)": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Release"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7225;http://localhost:5099"
+    },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
