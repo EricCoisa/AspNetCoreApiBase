@@ -1,6 +1,8 @@
 using CoreApiBase.Configurations;
+using CoreApiBase.Resources;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Localization;
 
 namespace CoreApiBase.HealthChecks
 {
@@ -23,17 +25,20 @@ namespace CoreApiBase.HealthChecks
         private readonly IOptions<DatabaseSettings> _databaseSettings;
         private readonly IOptions<CorsSettings> _corsSettings;
         private readonly ILogger<ConfigHealthCheck> _logger;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
         public ConfigHealthCheck(
             IOptions<JwtSettings> jwtSettings,
             IOptions<DatabaseSettings> databaseSettings,
             IOptions<CorsSettings> corsSettings,
-            ILogger<ConfigHealthCheck> logger)
+            ILogger<ConfigHealthCheck> logger,
+            IStringLocalizer<SharedResource> localizer)
         {
             _jwtSettings = jwtSettings;
             _databaseSettings = databaseSettings;
             _corsSettings = corsSettings;
             _logger = logger;
+            _localizer = localizer;
         }
 
         public Task<HealthCheckResult> CheckHealthAsync(
@@ -57,26 +62,26 @@ namespace CoreApiBase.HealthChecks
                 // Determinar resultado do health check
                 if (errors.Any())
                 {
-                    var errorMessage = $"Configurações inválidas encontradas: {string.Join("; ", errors)}";
-                    _logger.LogError("Health check de configuração falhou: {Errors}", string.Join(", ", errors));
+                    var errorMessage = _localizer["InvalidConfigurationsFound", string.Join("; ", errors)];
+                    _logger.LogError(_localizer["ConfigurationHealthCheckFailed", string.Join(", ", errors)]);
                     
                     return Task.FromResult(HealthCheckResult.Unhealthy(
                         errorMessage, 
                         data: healthData));
                 }
 
-                _logger.LogDebug("Health check de configuração passou com sucesso");
+                _logger.LogDebug(_localizer["ConfigurationHealthCheckPassed"]);
                 
                 return Task.FromResult(HealthCheckResult.Healthy(
-                    "Todas as configurações essenciais estão válidas", 
+                    _localizer["AllEssentialConfigurationsValid"], 
                     data: healthData));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Erro inesperado durante health check de configuração");
+                _logger.LogError(ex, _localizer["UnexpectedErrorDuringHealthCheck"]);
                 
                 return Task.FromResult(HealthCheckResult.Unhealthy(
-                    $"Erro inesperado: {ex.Message}",
+                    _localizer["UnexpectedError", ex.Message],
                     ex));
             }
         }
@@ -89,7 +94,7 @@ namespace CoreApiBase.HealthChecks
             try
             {
                 var jwt = _jwtSettings.Value;
-                var jwtErrors = jwt.GetValidationErrors();
+                var jwtErrors = jwt.GetValidationErrors(_localizer);
                 
                 if (jwtErrors.Any())
                 {
@@ -107,7 +112,7 @@ namespace CoreApiBase.HealthChecks
             }
             catch (Exception ex)
             {
-                errors.Add($"JWT: Erro ao acessar configurações - {ex.Message}");
+                errors.Add(_localizer["JwtErrorAccessingConfigurations", ex.Message]);
                 healthData["jwt_config"] = "ERROR";
                 healthData["jwt_valid"] = false;
             }
@@ -121,7 +126,7 @@ namespace CoreApiBase.HealthChecks
             try
             {
                 var db = _databaseSettings.Value;
-                var dbErrors = db.GetValidationErrors();
+                var dbErrors = db.GetValidationErrors(_localizer);
                 
                 if (dbErrors.Any())
                 {
@@ -133,7 +138,7 @@ namespace CoreApiBase.HealthChecks
             }
             catch (Exception ex)
             {
-                errors.Add($"Database: Erro ao acessar configurações - {ex.Message}");
+                errors.Add(_localizer["DatabaseErrorAccessingConfigurations", ex.Message]);
                 healthData["database_config"] = "ERROR";
                 healthData["database_valid"] = false;
             }
@@ -147,7 +152,7 @@ namespace CoreApiBase.HealthChecks
             try
             {
                 var cors = _corsSettings.Value;
-                var corsErrors = cors.GetValidationErrors();
+                var corsErrors = cors.GetValidationErrors(_localizer);
                 
                 if (corsErrors.Any())
                 {
@@ -157,7 +162,7 @@ namespace CoreApiBase.HealthChecks
                 // Verificação adicional: avisar sobre configuração insegura
                 if (cors.AllowedOrigins.Contains("*") && cors.AllowCredentials)
                 {
-                    errors.Add("CORS: Configuração insegura - AllowCredentials=true com AllowedOrigins=*");
+                    errors.Add(_localizer["CorsInsecureConfiguration"]);
                 }
 
                 healthData["cors_config"] = cors.GetConfigurationSummary();
@@ -165,7 +170,7 @@ namespace CoreApiBase.HealthChecks
             }
             catch (Exception ex)
             {
-                errors.Add($"CORS: Erro ao acessar configurações - {ex.Message}");
+                errors.Add(_localizer["CorsErrorAccessingConfigurations", ex.Message]);
                 healthData["cors_config"] = "ERROR";
                 healthData["cors_valid"] = false;
             }

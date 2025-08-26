@@ -1,4 +1,6 @@
 using System.Text;
+using Microsoft.Extensions.Localization;
+using CoreApiBase.Resources;
 
 namespace CoreApiBase.Configurations;
 

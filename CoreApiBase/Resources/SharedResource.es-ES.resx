@@ -121,4 +121,130 @@
   <data name="ErrorRevokingTokens" xml:space="preserve">
     <value>Error al revocar tokens: {0}</value>
   </data>
+  <!-- Configuration and Health Check Messages -->
+  <data name="UnknownValidationError" xml:space="preserve">
+    <value>Error de validación desconocido</value>
+  </data>
+  <data name="InvalidConfigurationInSection" xml:space="preserve">
+    <value>Configuración inválida en la sección '{0}':</value>
+  </data>
+  <data name="InvalidConfigurationsFound" xml:space="preserve">
+    <value>Configuraciones inválidas encontradas: {0}</value>
+  </data>
+  <data name="ConfigurationHealthCheckFailed" xml:space="preserve">
+    <value>Health check de configuración falló: {0}</value>
+  </data>
+  <data name="ConfigurationHealthCheckPassed" xml:space="preserve">
+    <value>Health check de configuración pasó exitosamente</value>
+  </data>
+  <data name="AllEssentialConfigurationsValid" xml:space="preserve">
+    <value>Todas las configuraciones esenciales son válidas</value>
+  </data>
+  <data name="UnexpectedErrorDuringHealthCheck" xml:space="preserve">
+    <value>Error inesperado durante health check de configuración</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Error inesperado: {0}</value>
+  </data>
+  <data name="JwtErrorAccessingConfigurations" xml:space="preserve">
+    <value>JWT: Error al acceder a configuraciones - {0}</value>
+  </data>
+  <data name="DatabaseErrorAccessingConfigurations" xml:space="preserve">
+    <value>Database: Error al acceder a configuraciones - {0}</value>
+  </data>
+  <data name="CorsInsecureConfiguration" xml:space="preserve">
+    <value>CORS: Configuración insegura - AllowCredentials=true con AllowedOrigins=*</value>
+  </data>
+  <data name="CorsErrorAccessingConfigurations" xml:space="preserve">
+    <value>CORS: Error al acceder a configuraciones - {0}</value>
+  </data>
+  <!-- Configuration Setup Messages -->
+  <data name="JwtSecretKeyRequired" xml:space="preserve">
+    <value>JWT SecretKey es requerido</value>
+  </data>
+  <data name="ConnectionStringRequired" xml:space="preserve">
+    <value>Connection String es requerida</value>
+  </data>
+  <data name="ConfigurationRequiredTitle" xml:space="preserve">
+    <value>🔧 CONFIGURACIÓN REQUERIDA - ASP.NET Core API Base</value>
+  </data>
+  <data name="MandatoryConfigurationsMissing" xml:space="preserve">
+    <value>❌ Configuraciones obligatorias están faltando:</value>
+  </data>
+  <data name="SolutionExecuteConfigurationScript" xml:space="preserve">
+    <value>✅ SOLUCIÓN: Ejecute el script de configuración</value>
+  </data>
+  <data name="Steps" xml:space="preserve">
+    <value>Pasos:</value>
+  </data>
+  <data name="StepOpenTerminal" xml:space="preserve">
+    <value>   1. Abra un terminal en el directorio raíz del proyecto</value>
+  </data>
+  <data name="StepExecuteScript" xml:space="preserve">
+    <value>   2. Ejecute: start setup-configuration.bat development</value>
+  </data>
+  <data name="StepRunProjectAgain" xml:space="preserve">
+    <value>   3. Ejecute el proyecto nuevamente</value>
+  </data>
+  <data name="DetailedInstructionsSaved" xml:space="preserve">
+    <value>📄 Instrucciones detalladas guardadas en: {0}</value>
+  </data>
+  <data name="RunningInDockerContainer" xml:space="preserve">
+    <value>🐳 EJECUTANDO EN CONTENEDOR DOCKER</value>
+  </data>
+  <data name="MandatoryConfigurationsNotFound" xml:space="preserve">
+    <value>❌ Configuraciones obligatorias no encontradas:</value>
+  </data>
+  <data name="ContainerSolutions" xml:space="preserve">
+    <value>🔧 SOLUCIONES PARA CONTENEDOR:</value>
+  </data>
+  <data name="StopCurrentContainer" xml:space="preserve">
+    <value>1️⃣ DETENER contenedor actual:</value>
+  </data>
+  <data name="ConfigureSecretsOnHost" xml:space="preserve">
+    <value>2️⃣ CONFIGURAR secrets en el host:</value>
+  </data>
+  <data name="RestartContainer" xml:space="preserve">
+    <value>3️⃣ REINICIAR contenedor:</value>
+  </data>
+  <!-- Data Annotations Messages -->
+  <data name="JwtSecretKeyRequiredValidation" xml:space="preserve">
+    <value>JWT SecretKey es requerido</value>
+  </data>
+  <data name="JwtSecretKeyMinLengthValidation" xml:space="preserve">
+    <value>JWT SecretKey debe tener al menos 32 caracteres para seguridad</value>
+  </data>
+  <data name="JwtIssuerRequiredValidation" xml:space="preserve">
+    <value>JWT Issuer es requerido</value>
+  </data>
+  <data name="JwtIssuerUrlValidation" xml:space="preserve">
+    <value>JWT Issuer debe ser una URL válida</value>
+  </data>
+  <data name="JwtAudienceRequiredValidation" xml:space="preserve">
+    <value>JWT Audience es requerido</value>
+  </data>
+  <data name="JwtAudienceUrlValidation" xml:space="preserve">
+    <value>JWT Audience debe ser una URL válida</value>
+  </data>
+  <data name="JwtExpiryMinutesValidation" xml:space="preserve">
+    <value>JWT ExpiryMinutes debe ser mayor que 0</value>
+  </data>
+  <data name="AllowedOriginsRequiredValidation" xml:space="preserve">
+    <value>AllowedOrigins es requerido</value>
+  </data>
+  <data name="AllowedOriginsMinLengthValidation" xml:space="preserve">
+    <value>Debe tener al menos un origen permitido</value>
+  </data>
+  <data name="PreflightMaxAgeValidation" xml:space="preserve">
+    <value>PreflightMaxAge debe ser >= 0</value>
+  </data>
+  <data name="ConnectionStringRequiredValidation" xml:space="preserve">
+    <value>Connection String es requerida</value>
+  </data>
+  <data name="ConnectionStringMinLengthValidation" xml:space="preserve">
+    <value>Connection String debe tener al menos 10 caracteres</value>
+  </data>
+  <data name="CommandTimeoutValidation" xml:space="preserve">
+    <value>CommandTimeout debe estar entre 1 y 300 segundos</value>
+  </data>
 </root>

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using Microsoft.Extensions.Localization;
 
 namespace CoreApiBase.Configurations
 {
@@ -14,8 +15,9 @@ namespace CoreApiBase.Configurations
         /// <typeparam name="T">Tipo da configuração</typeparam>
         /// <param name="configuration">Instância da configuração</param>
         /// <param name="sectionName">Nome da seção para mensagens de erro</param>
+        /// <param name="localizer">Localizador para mensagens</param>
         /// <exception cref="InvalidOperationException">Quando a configuração é inválida</exception>
-        public static void ValidateConfiguration<T>(this T configuration, string sectionName) 
+        public static void ValidateConfiguration<T>(this T configuration, string sectionName, IStringLocalizer? localizer = null) 
             where T : class
         {
             var validationContext = new ValidationContext(configuration);
@@ -26,7 +28,9 @@ namespace CoreApiBase.Configurations
             if (!isValid)
             {
                 var errors = validationResults.Select(vr => $"  - {vr.ErrorMessage}");
-                var errorMessage = $"Configuração inválida na seção '{sectionName}':\n{string.Join("\n", errors)}";
+                var errorMessage = localizer != null 
+                    ? $"{localizer["InvalidConfigurationInSection", sectionName]}\n{string.Join("\n", errors)}"
+                    : $"Configuração inválida na seção '{sectionName}':\n{string.Join("\n", errors)}";
                 
                 throw new InvalidOperationException(errorMessage);
             }
@@ -37,15 +41,17 @@ namespace CoreApiBase.Configurations
         /// </summary>
         /// <typeparam name="T">Tipo da configuração</typeparam>
         /// <param name="configuration">Instância da configuração</param>
+        /// <param name="localizer">Localizador para mensagens</param>
         /// <returns>Lista de propriedades que falharam na validação</returns>
-        public static List<string> GetValidationErrors<T>(this T configuration) where T : class
+        public static List<string> GetValidationErrors<T>(this T configuration, IStringLocalizer? localizer = null) where T : class
         {
             var validationContext = new ValidationContext(configuration);
             var validationResults = new List<ValidationResult>();
 
             Validator.TryValidateObject(configuration, validationContext, validationResults, true);
 
-            return validationResults.Select(vr => vr.ErrorMessage ?? "Erro de validação desconhecido").ToList();
+            return validationResults.Select(vr => vr.ErrorMessage ?? 
+                (localizer?["UnknownValidationError"] ?? "Erro de validação desconhecido")).ToList();
         }
 
         /// <summary>

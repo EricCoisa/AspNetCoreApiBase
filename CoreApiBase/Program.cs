@@ -139,7 +139,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         b => b.MigrationsAssembly("CoreApiBase")));
 
 // Localization
-builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+builder.Services.AddLocalization();
 
 var supportedCultures = new[] { "en-US", "pt-BR", "es-ES" };
 builder.Services.Configure<RequestLocalizationOptions>(options =>
