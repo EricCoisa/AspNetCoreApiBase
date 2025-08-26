@@ -190,16 +190,17 @@ case $ENVIRONMENT in
     "Docker"|"docker")
         setup_docker
         ;;
-    "Production"|"Prod"|"prod")
+    "Production"|"Prod"|"prod"|"Release"|"release")
         setup_production
         ;;
     *)
-        echo "Uso: ./setup-configuration.sh [Development|Docker|Production]"
+        echo "Uso: ./setup-configuration.sh [Development|Docker|Production|Release]"
         echo
         echo "Exemplos:"
         echo "  ./setup-configuration.sh Development    # Para desenvolvimento local"
         echo "  ./setup-configuration.sh Docker         # Para containers"
         echo "  ./setup-configuration.sh Production     # Orientações para produção"
+        echo "  ./setup-configuration.sh Release        # Orientações para produção (Visual Studio Release)"
         exit 1
         ;;
 esac

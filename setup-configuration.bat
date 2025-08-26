@@ -9,8 +9,8 @@ echo   Configuracao de Secrets - %ENVIRONMENT%
 echo =================================================
 echo.
 
-REM Função para gerar chave JWT
-powershell -Command "$bytes = New-Object byte[] 64; [System.Security.Cryptography.RandomNumberGenerator]::Fill($bytes); [Convert]::ToBase64String($bytes)" > temp_jwt_key.txt
+REM Função para gerar chave JWT (compatível com PowerShell mais antigo)
+powershell -Command "$rng = [System.Security.Cryptography.RNGCryptoServiceProvider]::Create(); $bytes = New-Object byte[] 64; $rng.GetBytes($bytes); [Convert]::ToBase64String($bytes)" > temp_jwt_key.txt
 set /p JWT_KEY=<temp_jwt_key.txt
 del temp_jwt_key.txt
 
@@ -75,11 +75,11 @@ goto :end
 echo [1/4] Criando secrets para Docker...
 if not exist secrets mkdir secrets
 
-echo !JWT_KEY!> secrets\jwt_secret
-echo http://localhost:8080> secrets\jwt_issuer
-echo http://localhost:8080> secrets\jwt_audience
-echo Data Source=/app/data/app.sqlite> secrets\db_connection
-echo http://localhost:3000,http://localhost:4200,http://localhost:8080> secrets\cors_origins
+echo %JWT_KEY% > secrets\jwt_secret
+echo http://localhost:8080 > secrets\jwt_issuer  
+echo http://localhost:8080 > secrets\jwt_audience
+echo Data Source=/app/data/app.sqlite > secrets\db_connection
+echo http://localhost:3000,http://localhost:4200,http://localhost:8080 > secrets\cors_origins
 
 echo [2/4] Configurando permissoes dos secrets...
 REM No Windows, os arquivos já são criados com permissões adequadas

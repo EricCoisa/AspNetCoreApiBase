@@ -55,13 +55,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HTTP_PORTS": "8080",
-        "ASPNETCORE_URLS": "http://+:8080",
-        "DatabaseSettings__ConnectionString": "Data Source=/app/data/appdb-dev.sqlite",
-        "DatabaseSettings__AutoMigrate": "true",
-        "DatabaseSettings__SeedData": "true",
-        "JwtSettings__SecretKey": "DevDockerSecretKeyForJwtTokenGeneration12345678901234567890",
-        "JwtSettings__Issuer": "http://localhost:8080",
-        "JwtSettings__Audience": "http://localhost:8080"
+        "ASPNETCORE_URLS": "http://+:8080"
       },
       "publishAllPorts": false,
       "useSSL": false,

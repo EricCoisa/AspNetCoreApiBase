@@ -54,14 +54,25 @@ public static class ConfigurationSetupHelper
     {
         try
         {
+            // Detectar se estamos em um container Docker
+            var isRunningInContainer = IsRunningInContainer();
+            
             // Caminho do arquivo HTML fixo
             var htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "configRequired.html");
 
-            // Mostrar mensagem no console (se disponível)
+            // Mostrar mensagem no console (sempre disponível)
             ShowConsoleMessage(missingConfigurations, htmlFilePath);
 
-            // Tentar abrir o arquivo HTML no navegador
-            TryOpenInBrowser(htmlFilePath);
+            // Só tentar abrir navegador se NÃO estivermos em container
+            if (!isRunningInContainer)
+            {
+                TryOpenInBrowser(htmlFilePath);
+            }
+            else
+            {
+                // Em container, mostrar instruções específicas
+                ShowDockerContainerInstructions(missingConfigurations);
+            }
 
             // Log para Debug/Output do Visual Studio
             LogToDebugOutput(missingConfigurations, htmlFilePath);
@@ -105,6 +116,85 @@ public static class ConfigurationSetupHelper
         {
             // Ignore se console não estiver disponível
         }
+    }
+
+    private static bool IsRunningInContainer()
+    {
+        try
+        {
+            // Verificar se estamos em um container Docker
+            // 1. Verificar variáveis de ambiente típicas de container
+            if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER")) ||
+                !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("KUBERNETES_SERVICE_HOST")) ||
+                !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("DOCKER_CONTAINER")))
+            {
+                return true;
+            }
+
+            // 2. Verificar se existe o arquivo /.dockerenv (indicador padrão Docker)
+            if (File.Exists("/.dockerenv"))
+            {
+                return true;
+            }
+
+            // 3. Verificar se o processo init (PID 1) é típico de container
+            if (Environment.OSVersion.Platform == PlatformID.Unix)
+            {
+                try
+                {
+                    var process1 = System.Diagnostics.Process.GetProcessById(1);
+                    var processName = process1.ProcessName.ToLower();
+                    if (processName.Contains("docker") || processName.Contains("container") || processName == "dotnet")
+                    {
+                        return true;
+                    }
+                }
+                catch
+                {
+                    // Ignorar erros ao verificar processo
+                }
+            }
+
+            return false;
+        }
+        catch
+        {
+            // Em caso de erro, assumir que não está em container
+            return false;
+        }
+    }
+
+    private static void ShowDockerContainerInstructions(List<string> missingConfigurations)
+    {
+        Console.WriteLine();
+        Console.WriteLine("🐳 EXECUTANDO EM CONTAINER DOCKER");
+        Console.WriteLine("════════════════════════════════════════════");
+        Console.WriteLine();
+        Console.WriteLine("❌ Configurações obrigatórias não encontradas:");
+        Console.WriteLine();
+        
+        foreach (var config in missingConfigurations)
+        {
+            Console.WriteLine($"   • {config}");
+        }
+        
+        Console.WriteLine();
+        Console.WriteLine("🔧 SOLUÇÕES PARA CONTAINER:");
+        Console.WriteLine();
+        Console.WriteLine("1️⃣ PARAR o container atual:");
+        Console.WriteLine("   docker-compose down");
+        Console.WriteLine();
+        Console.WriteLine("2️⃣ CONFIGURAR secrets no host:");
+        Console.WriteLine("   setup-configuration.bat production");
+        Console.WriteLine("   # ou");
+        Console.WriteLine("   ./setup-configuration.sh production");
+        Console.WriteLine();
+        Console.WriteLine("3️⃣ REINICIAR o container:");
+        Console.WriteLine("   docker-compose up --build");
+        Console.WriteLine();
+        Console.WriteLine("💡 Os Docker Secrets serão montados automaticamente!");
+        Console.WriteLine();
+        Console.WriteLine("════════════════════════════════════════════");
     }
 
     private static void TryOpenInBrowser(string htmlFilePath)

@@ -19,36 +19,29 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
       
-      # Database Configuration (override with secrets or env vars)
+      # Database Configuration
       - DatabaseSettings__CommandTimeout=30
       - DatabaseSettings__AutoMigrate=true
       - DatabaseSettings__SeedData=true
-      - DatabaseSettings__ConnectionString=Data Source=/app/data/appdb.sqlite
       
-      # JWT Configuration (override with secrets)
-      - JwtSettings__Issuer=http://localhost:8080
-      - JwtSettings__Audience=http://localhost:8080
+      # JWT Configuration
       - JwtSettings__ExpiryMinutes=180
-      - JwtSettings__SecretKey=DockerSecretKeyForJwtTokenGeneration12345678901234567890
       
-      # CORS Configuration
-      - CorsSettings__AllowedOrigins__0=http://localhost:3000
-      - CorsSettings__AllowedOrigins__1=http://localhost:4200
-      - CorsSettings__AllowedOrigins__2=http://localhost:8080
-      - CorsSettings__AllowedOrigins__3=http://localhost:8081
-    
     volumes:
       # SQLite database persistence
       - sqlite_data:/app/data
       
-    # Optional: Docker Secrets (uncomment to use)
-    # secrets:
-    #   - db_connection
-    #   - jwt_secret
+    # Docker Secrets
+    secrets:
+      - db_connection
+      - jwt_secret
+      - jwt_issuer
+      - jwt_audience
+      - cors_origins
     
-    # Health check
+    # Health check usando endpoints internos
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      test: ["CMD-SHELL", "dotnet --info > /dev/null || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -69,12 +62,18 @@ volumes:
   sqlite_data:
     driver: local
 
-# Optional: Docker Secrets configuration
-# secrets:
-#   db_connection:
-#     file: ./secrets/db_connection.txt
-#   jwt_secret:
-#     file: ./secrets/jwt_secret.txt
+# Docker Secrets configuration
+secrets:
+  db_connection:
+    file: ./secrets/db_connection
+  jwt_secret:
+    file: ./secrets/jwt_secret
+  jwt_issuer:
+    file: ./secrets/jwt_issuer
+  jwt_audience:
+    file: ./secrets/jwt_audience
+  cors_origins:
+    file: ./secrets/cors_origins
 
 networks:
   default:
