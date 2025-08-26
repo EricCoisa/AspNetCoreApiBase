@@ -43,8 +43,6 @@ namespace CoreApiBase.Extensions
 
             // Configurar e validar DatabaseSettings
             var dbSection = configuration.GetSection(DatabaseSettings.SectionName);
-            services.Configure<DatabaseSettings>(dbSection);
-            
             var dbSettings = dbSection.Get<DatabaseSettings>() ?? new DatabaseSettings();
             
             // Para DatabaseSettings, usar ConnectionString do appsettings se não estiver na seção específica
@@ -52,6 +50,16 @@ namespace CoreApiBase.Extensions
             {
                 dbSettings.ConnectionString = configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
             }
+            
+            // Configurar o Options com a ConnectionString correta
+            services.Configure<DatabaseSettings>(options =>
+            {
+                dbSection.Bind(options);
+                if (string.IsNullOrEmpty(options.ConnectionString))
+                {
+                    options.ConnectionString = configuration.GetConnectionString("DefaultConnection") ?? string.Empty;
+                }
+            });
             
             dbSettings.ValidateConfiguration(DatabaseSettings.SectionName);
 

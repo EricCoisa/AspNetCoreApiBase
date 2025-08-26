@@ -73,3 +73,23 @@ Desktop.ini
 .idea/
 *.sln.iml
 CoreApiBase/appdb.sqlite
+
+# =================================================
+# SECRETS E CONFIGURAÇÕES SENSÍVEIS  
+# =================================================
+
+# Arquivo de configuração real (NÃO commitar)
+secrets.env
+
+# Pasta de secrets do Docker
+secrets/
+!secrets/.gitkeep
+!secrets/*.example
+
+# Arquivos temporários de configuração
+temp_jwt_key.txt
+
+# Databases locais
+*.sqlite
+*.sqlite-*
+*.db

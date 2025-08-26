@@ -1,0 +1,80 @@
+# =============================================================================
+# ASP.NET Core API Base - Docker Ignore
+# =============================================================================
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+README*
+CHANGELOG*
+LICENSE*
+
+# Docker files
+**/Dockerfile*
+**/docker-compose*
+.dockerignore
+
+# Visual Studio
+.vs/
+.vscode/
+**/*.user
+**/*.suo
+**/*.userosscache
+**/*.sln.docstates
+
+# Build results
+**/bin/
+**/obj/
+**/out/
+
+# NuGet
+**/packages/
+*.nupkg
+*.snupkg
+.nuget/
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+
+# Application specific
+**/appdb*.sqlite*
+**/logs/
+**/secrets/
+**/.env*
+
+# Node.js (if any frontend)
+node_modules/
+npm-debug.log*
+
+# Python (if any tools)
+__pycache__/
+*.pyc
+
+# Temporary files
+**/*.tmp
+**/*.temp
+**/*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# JetBrains
+.idea/
+
+# User Secrets
+**/appsettings.Development.json
+**/appsettings.Local.json
