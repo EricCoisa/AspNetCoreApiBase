@@ -1,165 +1,205 @@
-# ASP.NET Core API Base - StarterPack
+# CoreApiBase
 
-🚀 **Base project for fast creation of ASP.NET Core APIs with Entity Framework, AutoMapper and SQLite**
+[![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat&logo=dotnet)](https://dotnet.microsoft.com/download/dotnet/8.0)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat&logo=docker)](https://docker.com)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Tests](https://img.shields.io/badge/Tests-40%2B-brightgreen)](CoreTestBase/)
 
-[![.NET 8](https://img.shields.io/badge/.NET-8.0-blue.svg)](https://dotnet.microsoft.com/download/dotnet/8.0)
-[![Entity Framework Core](https://img.shields.io/badge/EF%20Core-9.0.8-green.svg)](https://docs.microsoft.com/ef/)
-[![SQLite](https://img.shields.io/badge/SQLite-Database-lightgrey.svg)](https://www.sqlite.org/)
-[![AutoMapper](https://img.shields.io/badge/AutoMapper-12.0.1-orange.svg)](https://automapper.org/)
+> **Starter template for REST APIs in ASP.NET Core 8.0 with JWT authentication, Docker, and a complete test suite.**
 
-## 📋 About the Project
+## 🚀 Features
 
-This project is a complete **StarterPack** for ASP.NET Core API development, providing a solid and organized foundation to accelerate the development of new projects. It includes essential configurations, well-defined folder structure, and ready-to-use CRUD implementations.
+- ✅ **ASP.NET Core 8.0** with Entity Framework
+- ✅ **JWT Authentication** with refresh tokens
+- ✅ **SQLite** pre-configured (local)
+- ✅ **Docker** ready for production
+- ✅ **Swagger/OpenAPI** automatic documentation
+- ✅ **AutoMapper** for DTOs
+- ✅ **Integrated Health Checks**
+- ✅ **40+ Tests** (Unit, Integration, Contract)
+- ✅ **Secure configuration system** (User Secrets, Docker Secrets)
 
-## 🏗️ Architecture
+## 🏃‍♂️ Quick Start
 
-The project follows a well-defined layered architecture:
+### Local Development
 
+```bash
+# 1. Clone the repository
+git clone https://github.com/EricCoisa/AspNetCoreApiBase.git
+cd AspNetCoreApiBase
+
+# 2. Auto-configure (generates JWT keys, User Secrets)
+setup-configuration.bat development  # Windows
+./setup-configuration.sh development # Linux/Mac
+
+# 3. Run
+dotnet run --project CoreApiBase
+
+# 4. Access
+# API: http://localhost:5099
+# Swagger: http://localhost:5099/swagger
 ```
-CoreApiBase/          # 🎯 Presentation Layer (API)
-├── Controllers/      # API Controllers
-├── Application/      # DTOs and application models
-├── Extensions/       # Extension methods for DI
-├── Configurations/   # Project configurations
-└── Middlewares/      # Custom middlewares
 
-CoreDomainBase/       # 🏢 Domain and Data Layer
-├── Entities/         # Domain entities
-├── Services/         # Business services
-├── Repositories/     # Data repositories
-├── Interfaces/       # Contracts and interfaces
-└── Data/            # Database context and EF configurations
-    └── Configurations/ # Entity configurations
+### With Docker
 
-Tests/               # 🧪 Tests
-├── UnitTests/       # Unit tests
-└── IntegrationTests/ # Integration tests
+```bash
+# 1. Configure for Docker
+setup-configuration.bat docker  # Windows
+./setup-configuration.sh docker # Linux/Mac
+
+# 2. Run
+docker-compose up --build
+
+# 3. Access
+# API: http://localhost:8080
+# Swagger: http://localhost:8080/swagger
 ```
 
-## ⚡ Features
+## 📋 API Endpoints
 
-- ✅ **ASP.NET Core 8.0** - Modern and performant framework
-- ✅ **Entity Framework Core** - ORM with pre-configured SQLite
-- ✅ **AutoMapper** - Automatic mapping between entities and DTOs
-- ✅ **Swagger/OpenAPI** - Automatic API documentation
-- ✅ **Dependency Injection** - Configured and ready to use
-- ✅ **Repository Pattern** - Generic repository implementation
-- ✅ **Complete CRUD** - Functional example with User entity
-- ✅ **Migrations** - Database version control
-- ✅ **Clean Structure** - Clear separation of concerns
+### Authentication
+- `POST /Authentication/register` - Register user
+- `POST /Authentication/login` - Login
+- `GET /Authentication/profile` - Profile (🔒 JWT)
 
-## 🚀 How to Use
+### Users (Admin)
+- `GET /User` - List users (🔒 Admin)
+- `POST /User` - Create user (🔒 Admin)
+- `PUT /User/{id}` - Update user (🔒 Admin)
+- `DELETE /User/{id}` - Delete user (🔒 Admin)
 
-### Prerequisites
-- [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [Visual Studio 2022](https://visualstudio.microsoft.com/) or [VS Code](https://code.visualstudio.com/)
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/EricCoisa/AspNetCoreApiBase.git
-   cd AspNetCoreApiBase
-   ```
-
-2. **Restore packages**
-   ```bash
-   dotnet restore
-   ```
-
-3. **Run migrations**
-   ```bash
-   dotnet ef database update --project CoreApiBase
-   ```
-
-4. **Run the project**
-   ```bash
-   dotnet run --project CoreApiBase
-   ```
-
-5. **Access the API**
-   - API: `http://localhost:5099`
-   - Swagger: `http://localhost:5099/swagger`
-
-## 🎯 Available Endpoints
-
-### Users API
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/User` | List all users |
-| GET | `/User/{id}` | Get user by ID |
-| POST | `/User` | Create new user |
-| PUT | `/User/{id}` | Update user |
-| DELETE | `/User/{id}` | Delete user |
-
-### Example Payload
-```json
-{
-  "id": 1,
-  "name": "John Doe"
-}
-```
+### Health Checks
+- `GET /health` - General status
+- `GET /health/ready` - Readiness
+- `GET /health/live` - Liveness
 
 ## 🔧 Configuration
 
-### Connection String
-Edit the `appsettings.json` file:
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Data Source=appdb.sqlite"
-  }
-}
-```
-
-### Adding New Entities
-
-1. **Create the entity** in `CoreDomainBase/Entities/`
-2. **Create the DTO** in `CoreApiBase/Application/DTOs/`
-3. **Configure the mapping** in `CoreDomainBase/Data/Configurations/`
-4. **Add to DbContext** in `CoreDomainBase/Data/AppDbContext.cs`
-5. **Run the migration**:
-   ```bash
-   dotnet ef migrations add MigrationName --project CoreApiBase
-   dotnet ef database update --project CoreApiBase
-   ```
-
-## 🧪 Testing
-
-Run the project tests:
+### Automated Scripts
 ```bash
-dotnet test
+# Development (User Secrets + local SQLite)
+setup-configuration.bat development
+
+# Docker (Docker Secrets)
+setup-configuration.bat docker
+
+# Production (Environment Variables)
+setup-configuration.bat production
+
+# Clean configuration
+cleanup-secrets.bat
 ```
 
-## 📦 Included Packages
+### Required Settings
+- `JWT_SECRET_KEY` - JWT secret key (auto-generated)
+- `DATABASE_CONNECTION_STRING` - Database connection string
+- `CORS_ALLOWED_ORIGINS` - Allowed origins for CORS
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| Microsoft.EntityFrameworkCore.Sqlite | 9.0.8 | SQLite provider for EF Core |
-| Microsoft.EntityFrameworkCore.Design | 9.0.8 | EF design-time tools |
-| AutoMapper | 12.0.1 | Object-to-object mapping |
-| AutoMapper.Extensions.Microsoft.DependencyInjection | 12.0.1 | AutoMapper integration with DI |
-| Swashbuckle.AspNetCore | 6.6.2 | Swagger documentation |
+## 🧪 Tests
+
+```bash
+# Run all tests
+dotnet test
+
+# Only unit tests
+dotnet test --filter "Category=Unit"
+
+# Only integration tests
+dotnet test --filter "Category=Integration"
+```
+
+### Coverage
+- **18 unit tests** - UserService, repositories
+- **12 integration tests** - Health checks, API endpoints
+- **10+ contract tests** - API response snapshots
+
+## 🐳 Deploy
+
+### Docker Compose
+```bash
+docker-compose up -d --build
+```
+
+### IIS (Windows)
+```bash
+dotnet publish CoreApiBase -c Release -o ./publish
+# Configure in IIS Manager
+```
+
+## 🏗️ Architecture
+
+```
+CoreApiBase/          # 🎯 API Layer
+├── Controllers/      # REST Controllers
+├── Application/      # DTOs and Profiles
+├── Configurations/   # Configurations
+├── Middlewares/      # Custom middlewares
+└── Utils/           # Utilities
+
+CoreDomainBase/       # 🏢 Domain & Data Layer
+├── Entities/         # Domain entities
+├── Services/         # Business logic
+├── Repositories/     # Data access
+├── Interfaces/       # Contracts
+└── Data/            # DbContext and configs
+
+CoreTestBase/         # 🧪 Tests
+├── Unit/            # Unit tests
+├── Integration/     # Integration tests
+└── Contract/        # Contract tests
+```
+
+## 🔐 Security
+
+- **JWT Authentication** with Security Stamp
+- **Role-based Authorization** (User, Admin)
+- **CORS** configurable per environment
+- **Docker Secrets** for production
+- **User Secrets** for development
+
+## 🛠️ Technologies
+
+- .NET 8.0 / ASP.NET Core
+- Entity Framework Core 9.0
+- SQLite (development)
+- AutoMapper 12.0
+- Swagger/OpenAPI
+- xUnit + Moq + FluentAssertions
+- Docker & Docker Compose
+
+## 📖 Examples
+
+### Register and Login
+```bash
+# Register
+curl -X POST http://localhost:5099/Authentication/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"name","email":"email","password":"password"}'
+
+# Login
+curl -X POST http://localhost:5099/Authentication/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"email","password":"password"}'
+```
+
+### Health Check
+```bash
+curl http://localhost:5099/health
+```
 
 ## 🤝 Contributing
 
 1. Fork the project
-2. Create a feature branch (`git checkout -b feature/MyFeature`)
-3. Commit your changes (`git commit -m 'Add new feature'`)
-4. Push to the branch (`git push origin feature/MyFeature`)
-5. Open a Pull Request
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Setup the environment (`setup-configuration.bat development`)
+4. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+5. Push to the branch (`git push origin feature/AmazingFeature`)
+6. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## 🔗 Useful Links
-
-- [ASP.NET Core Documentation](https://docs.microsoft.com/aspnet/core/)
-- [Entity Framework Core](https://docs.microsoft.com/ef/core/)
-- [AutoMapper](https://docs.automapper.org/)
-- [Swagger/OpenAPI](https://swagger.io/)
+This project is licensed under the MIT License.
 
 ---
 
-⭐ **If this project was helpful to you, consider giving it a star!**
+**Developed with ❤️ by [EricCoisa](https://github.com/EricCoisa)**
